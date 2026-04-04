@@ -1,0 +1,54 @@
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/camperrent/apps/api"
+PassengerBaseURI "/"
+PassengerNodejs "/home/camperrent/nodevenv/apps/api/20/bin/node"
+PassengerAppType node
+PassengerStartupFile src/index.js
+PassengerAppLogFile "/home/camperrent/logs/api.log"
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
+<IfModule Litespeed>
+SetEnv ADMIN_COOKIE_NAME admin_token
+SetEnv ADMIN_JWT_SECRET d9e32604c7ee1c4d2fc4444250e4d487757ff58317d14f3ec3200378f93e1087
+SetEnv ADMIN_LOGIN_RATE_LIMIT 5
+SetEnv ADMIN_LOGIN_RATE_LIMIT_WINDOW_MIN 5
+SetEnv ADMIN_RESET_FAILED_EMAILS_LIMIT 200
+SetEnv ADMIN_USERS admin1:\$2b\$12\$It/pX4NCzQRwLZv5QTipQuRpMgRR0chb8rfFv23AnMUXLeXOSfjqm,info@camper-rent.bg:\$2b\$12\$sJSTBcmn01savASwni6XB.OOa01lyusN6iG3cTrPEuNlOFslKAaQm
+SetEnv DATABASE_URL mysql://camperrent_camperrent2:kUWgsyDuU5fcTKF@localhost:3306/camperrent_camperrent?connection_limit=1
+SetEnv DIRECT_DATABASE_URL mysql://camperrent_camperrent2:kUWgsyDuU5fcTKF@localhost:3306/camperrent_camperrent?connection_limit=1
+SetEnv MAIL_PASS kUWgsyDuU5fcTKF
+SetEnv MAIL_USER no-reply@camper-rent.bg
+SetEnv NODE_ENV production
+SetEnv ORDERS_EMAIL_FROM no-reply@camper-rent.bg
+SetEnv ORDERS_EMAIL_TO info@camper-rent.bg
+SetEnv ORDERS_MAX_ITEMS 50
+SetEnv ORDERS_MAX_QTY_PER_ITEM 99
+SetEnv ORDERS_RATE_LIMIT 10
+SetEnv ORDERS_RATE_LIMIT_WINDOW_MIN 10
+SetEnv ORDER_EMAIL_MAX_ATTEMPTS 10
+SetEnv ORDER_EMAIL_WORKER_LOCK_KEY 913337
+SetEnv PG_POOL_MAX 5
+SetEnv PORT 4000
+SetEnv PRISMA_CLIENT_ENGINE_TYPE binary
+SetEnv PRISMA_QUERY_ENGINE_TYPE binary
+SetEnv PUBLIC_BASE_URL https://api.camper-rent.bg
+SetEnv PUBLIC_DIR /home/camperrent/apps/api/public
+SetEnv PUBLIC_PATH /public
+SetEnv SMTP_HOST mail.camper-rent.bg
+SetEnv SMTP_PASS kUWgsyDuU5fcTKF
+SetEnv SMTP_PORT 587
+SetEnv SMTP_SECURE false
+SetEnv SMTP_USER no-reply@camper-rent.bg
+SetEnv UPLOADS_DIR /home/camperrent/apps/api/uploads
+SetEnv UPLOADS_PUBLIC_PATH /uploads
+SetEnv UPLOAD_ALLOWED_MIME image/jpeg,image/png,image/webp
+SetEnv UPLOAD_MAX_BYTES 5000000
+SetEnv INFO_FILES_ALLOWED_MIME application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,image/jpeg,image/png,image/webp
+SetEnv INFO_FILES_MAX_BYTES 20000000
+SetEnv INFO_FILES_PUBLIC_PATH /info-files
+SetEnv INFO_FILES_DIR /home/camperrent/apps/api/info-files
+</IfModule>
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION END
+# php -- BEGIN cPanel-generated handler, do not edit
+# This domain inherits the “PHP” package.
+# php -- END cPanel-generated handler, do not edit

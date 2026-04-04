@@ -1,0 +1,184 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "./generated/prisma"
+  engineType    = "library"
+  binaryTargets = ["native", "debian-openssl-1.0.x", "debian-openssl-1.1.x", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider  = "mysql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+  slug     String    @unique
+  isActive Boolean   @default(true)
+  products Product[]
+}
+
+model Brand {
+  id       Int       @id @default(autoincrement())
+  name     String
+  slug     String    @unique
+  isActive Boolean   @default(true)
+  products Product[]
+}
+
+model Product {
+  id            Int      @id @default(autoincrement())
+  name          String
+  slug          String   @unique
+  articleNumber String?  @db.VarChar(64)
+  description   String   @db.LongText
+  price         Int
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  categoryId    Int
+  category      Category @relation(fields: [categoryId], references: [id])
+
+  brandId       Int?
+  brand         Brand?   @relation(fields: [brandId], references: [id])
+
+  images        ProductImage[]
+  infoFiles     ProductInfoFile[]
+  orderItems    OrderItem[]
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  url       String
+  sortOrder Int     @default(0)
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, sortOrder])
+}
+
+model ProductInfoFile {
+  id           Int      @id @default(autoincrement())
+  url          String
+  filename     String   @db.VarChar(255)
+  originalname String?  @db.VarChar(255)
+  mimetype     String?  @db.VarChar(120)
+  size         Int?
+  sortOrder    Int      @default(0)
+
+  productId    Int
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([filename])
+  @@index([productId, sortOrder])
+}
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  CANCELLED
+  DONE
+}
+
+enum DeliveryMethod {
+  COURIER
+  PICKUP
+}
+
+enum AdminRequestStatus {
+  ACTIVE
+  COMPLETED
+}
+
+model Order {
+  id             Int            @id @default(autoincrement())
+
+  customerName   String
+  email          String
+  phone          String
+  address        String
+  deliveryMethod DeliveryMethod
+  note           String?
+  status         OrderStatus    @default(NEW)
+  adminStatus    AdminRequestStatus @default(ACTIVE)
+
+  subtotal       Int
+  deliveryFee    Int
+  total          Int
+
+  rentalPlace    String?
+  rentalFrom     DateTime?
+  rentalTo       DateTime?
+
+  country        String?
+  city           String?
+  postalCode     String?
+  street         String?
+
+  expectedMileageKm Int?
+  visitCountries    String?
+
+  rentalAccessories String? @db.LongText
+
+  items          OrderItem[]
+  emails         OrderEmail[]
+
+  createdAt      DateTime       @default(now())
+}
+
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+
+  orderId    Int
+  productId  Int
+
+  qty        Int
+  unitPrice  Int
+  lineTotal  Int
+
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id])
+
+  createdAt  DateTime @default(now())
+}
+
+enum OrderEmailStatus {
+  PENDING
+  SENDING
+  SENT
+  FAILED
+}
+
+enum OrderEmailKind {
+  ADMIN
+  CUSTOMER
+}
+
+model OrderEmail {
+  id        Int              @id @default(autoincrement())
+  orderId   Int
+  kind      OrderEmailKind
+  to        String
+  subject   String @db.VarChar(255)
+  html      String @db.LongText
+
+  status    OrderEmailStatus @default(PENDING)
+  attempts  Int              @default(0)
+  lastError String?
+  sentAt    DateTime?
+
+  providerMessageId String?
+
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  order     Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([orderId, kind])
+  @@index([status, createdAt])
+  @@index([orderId])
+  @@index([kind, status, createdAt])
+}

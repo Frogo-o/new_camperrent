@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs and debug output
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# OS/editor clutter
+.DS_Store
+Thumbs.db
+
+# Build output
+.next/
+out/
+build/
+dist/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Deployment/platform folders
+.vercel/
+
+# Runtime and temporary app data
+tmp/
+uploads/
+info-files/
+
+# Prisma generated client output
+src/generated/prisma/
+prisma/generated/
+
+# Archives and local database dumps
+*.zip
+*.sql
+
+# Local secrets
+*.pem
