@@ -1,0 +1,41 @@
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/camperrent/apps/api"
+PassengerBaseURI "/"
+PassengerNodejs "/home/camperrent/nodevenv/apps/api/20/bin/node"
+PassengerAppType node
+PassengerStartupFile index.js
+PassengerAppLogFile "/home/camperrent/logs/api.log"
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
+<IfModule Litespeed>
+SetEnv ADMIN_COOKIE_NAME admin_token
+SetEnv ADMIN_JWT_SECRET d9e32604c7ee1c4d2fc4444250e4d487757ff58317d14f3ec3200378f93e1087
+SetEnv ADMIN_JWT_TTL_DAYS 30
+SetEnv ADMIN_LOGIN_RATE_LIMIT 5
+SetEnv ADMIN_LOGIN_RATE_LIMIT_WINDOW_MIN 5
+SetEnv ADMIN_RESET_FAILED_EMAILS_LIMIT 200
+SetEnv ADMIN_USERS admin1:$2b$12$TMZ3idqKtrOP2xTT5M0Go.BTQsbLlO5k8kl6txTvHTw6nJV3psO9S,admin2:$2b$12$jhZIvYy9BrnQoop6NvXU2ez.4L9opVYxzET7ekiYp9hwdSO9T3ItK
+SetEnv DATABASE_URL postgresql://<<<DB_USER>>>:<<<DB_PASS>>>@<<<DB_HOST>>>:<<<DB_PORT>>>/<<<DB_NAME>>>?schema=public
+SetEnv DIRECT_DATABASE_URL postgresql://<<<DB_USER>>>:<<<DB_PASS>>>@<<<DB_HOST>>>:<<<DB_PORT>>>/<<<DB_NAME>>>?schema=public
+SetEnv NODE_ENV production
+SetEnv ORDERS_EMAIL_FROM no-reply@camper-rent.bg
+SetEnv ORDERS_EMAIL_TO info@camper-rent.bg
+SetEnv ORDERS_MAX_ITEMS 50
+SetEnv ORDERS_MAX_QTY_PER_ITEM 99
+SetEnv ORDER_EMAIL_MAX_ATTEMPTS 10
+SetEnv ORDER_EMAIL_WORKER_LOCK_KEY 913337
+SetEnv PG_POOL_MAX 5
+SetEnv PUBLIC_BASE_URL https://api.camper-rent.bg
+SetEnv SMTP_HOST mail.camper-rent.bg
+SetEnv SMTP_PASS kUWgsyDuU5fcTKF
+SetEnv SMTP_PORT 465
+SetEnv SMTP_SECURE true
+SetEnv SMTP_USER no-reply@camper-rent.bg
+SetEnv UPLOADS_DIR /home/camperrent/apps/api/uploads
+SetEnv UPLOADS_PUBLIC_PATH /uploads
+SetEnv UPLOAD_ALLOWED_MIME image/jpeg,image/png,image/webp
+SetEnv UPLOAD_MAX_BYTES 5000000
+SetEnv ORDERS_RATE_LIMIT 10
+SetEnv ORDERS_RATE_LIMIT_WINDOW_MIN 10
+</IfModule>
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION END
