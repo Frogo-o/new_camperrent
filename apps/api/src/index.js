@@ -1,3 +1,5 @@
+require("../load-env");
+
 // KILL undici / llhttp wasm
 delete globalThis.fetch;
 delete globalThis.Headers;
@@ -6,7 +8,6 @@ delete globalThis.Response;
 
 globalThis.fetch = require("node-fetch");
 
-require("dotenv").config();
 process.env.PRISMA_CLIENT_ENGINE_TYPE = "binary"
 process.env.PRISMA_QUERY_ENGINE_TYPE = "binary"
 

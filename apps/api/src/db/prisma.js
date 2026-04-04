@@ -1,4 +1,4 @@
-require("dotenv/config");
+require("../../load-env");
 
 const { PrismaClient } = require("../../prisma/generated/prisma");
 

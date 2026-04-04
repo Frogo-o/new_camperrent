@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
-    "build": "next build --webpack",
-    "start": "next start",
+    "dev": "node run-next.js dev --webpack",
+    "build": "node run-next.js build --webpack",
+    "start": "node run-next.js start",
     "lint": "eslint",
     "deploy": "npm run build && npm run deploy:static",
     "deploy:static": "rm -rf /home/camperrent/public_html/_next/static && mkdir -p /home/camperrent/public_html/_next && cp -R .next/static /home/camperrent/public_html/_next/static"
