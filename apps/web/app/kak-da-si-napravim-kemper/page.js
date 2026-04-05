@@ -8,7 +8,7 @@ function CatalogCategoryLink({ slug, children }) {
   function handleClick() {
     sessionStorage.setItem("catalogCategorySlug", slug);
     sessionStorage.removeItem("catalogBrandSlug");
-    router.push("/");
+    router.push("/store");
   }
 
   return (

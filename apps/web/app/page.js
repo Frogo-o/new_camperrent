@@ -1,5 +1,5 @@
-import CatalogPageClient from "../components/CatalogPageClient";
+import CamperHomepage from "../components/CamperHomepage";
 
 export default function Page() {
-  return <CatalogPageClient />;
+  return <CamperHomepage />;
 }
