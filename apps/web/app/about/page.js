@@ -1,8 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const ASSET_BASE =
-    (process.env.NEXT_PUBLIC_ASSET_BASE || "https://api.camper-rent.bg/public").replace(/\/+$/, "");
+function getAssetBase() {
+    const raw =
+        process.env.NEXT_PUBLIC_ASSET_BASE ||
+        process.env.NEXT_PUBLIC_API_URL ||
+        "https://api.camper-rent.bg";
+
+    const normalized = raw.replace(/\/+$/, "");
+    return normalized.endsWith("/public") ? normalized : `${normalized}/public`;
+}
+
+const ASSET_BASE = getAssetBase();
 
 function asset(p) {
     const clean = String(p || "").replace(/^\/+/, "");
