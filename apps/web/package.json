@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node run-next.js dev --webpack",
-    "build": "node run-next.js build --webpack",
+    "build": "node run-next.js build --webpack && node sync-standalone-assets.js",
     "start": "node run-next.js start",
     "lint": "eslint",
     "deploy": "npm run build && npm run deploy:static",
