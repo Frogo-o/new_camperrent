@@ -140,25 +140,25 @@ function seededProducts(refs) {
 
 async function upsertLookups() {
   for (const category of categories) {
-    await prisma.category.upsert({
+    const existing = await prisma.category.findUnique({
       where: { slug: category.slug },
-      update: {
-        name: category.name,
-        isActive: category.isActive,
-      },
-      create: category,
+      select: { id: true },
     });
+
+    if (!existing) {
+      await prisma.category.create({ data: category });
+    }
   }
 
   for (const brand of brands) {
-    await prisma.brand.upsert({
+    const existing = await prisma.brand.findUnique({
       where: { slug: brand.slug },
-      update: {
-        name: brand.name,
-        isActive: brand.isActive,
-      },
-      create: brand,
+      select: { id: true },
     });
+
+    if (!existing) {
+      await prisma.brand.create({ data: brand });
+    }
   }
 
   const categoryRows = await prisma.category.findMany({
@@ -182,18 +182,18 @@ async function upsertCatalogData(refs) {
   const seeded = [];
 
   for (const product of products) {
-    const saved = await prisma.product.upsert({
+    const existing = await prisma.product.findUnique({
       where: { slug: product.slug },
-      update: {
-        name: product.name,
-        articleNumber: product.articleNumber,
-        description: product.description,
-        price: product.price,
-        isActive: product.isActive,
-        categoryId: product.categoryId,
-        brandId: product.brandId,
-      },
-      create: {
+      select: { id: true, slug: true, name: true, price: true },
+    });
+
+    if (existing) {
+      seeded.push(existing);
+      continue;
+    }
+
+    const saved = await prisma.product.create({
+      data: {
         name: product.name,
         slug: product.slug,
         articleNumber: product.articleNumber,
@@ -205,9 +205,6 @@ async function upsertCatalogData(refs) {
       },
       select: { id: true, slug: true, name: true, price: true },
     });
-
-    await prisma.productImage.deleteMany({ where: { productId: saved.id } });
-    await prisma.productInfoFile.deleteMany({ where: { productId: saved.id } });
 
     if (product.images.length > 0) {
       await prisma.productImage.createMany({
@@ -293,27 +290,20 @@ async function upsertSampleOrder(products) {
       },
       select: { id: true },
     });
-  } else {
-    await prisma.order.update({
-      where: { id: order.id },
-      data: {
-        subtotal,
-        deliveryFee,
-        total,
-      },
-    });
   }
 
-  await prisma.orderItem.deleteMany({ where: { orderId: order.id } });
-  await prisma.orderItem.createMany({
-    data: items.map((item) => ({
-      orderId: order.id,
-      productId: item.productId,
-      qty: item.qty,
-      unitPrice: item.unitPrice,
-      lineTotal: item.qty * item.unitPrice,
-    })),
-  });
+  const existingItemsCount = await prisma.orderItem.count({ where: { orderId: order.id } });
+  if (existingItemsCount === 0) {
+    await prisma.orderItem.createMany({
+      data: items.map((item) => ({
+        orderId: order.id,
+        productId: item.productId,
+        qty: item.qty,
+        unitPrice: item.unitPrice,
+        lineTotal: item.qty * item.unitPrice,
+      })),
+    });
+  }
 
   const sentAt = new Date();
   const adminEmail = process.env.ORDERS_EMAIL_TO || "info@camper-rent.bg";
@@ -326,55 +316,45 @@ async function upsertSampleOrder(products) {
     "</ul>",
   ].join("");
 
-  await prisma.orderEmail.upsert({
+  const adminEmailRow = await prisma.orderEmail.findUnique({
     where: { orderId_kind: { orderId: order.id, kind: "ADMIN" } },
-    update: {
-      to: adminEmail,
-      subject: `Seed order #${order.id} for admin`,
-      html,
-      status: "SENT",
-      attempts: 1,
-      lastError: null,
-      sentAt,
-      providerMessageId: `seed-admin-${order.id}`,
-    },
-    create: {
-      orderId: order.id,
-      kind: "ADMIN",
-      to: adminEmail,
-      subject: `Seed order #${order.id} for admin`,
-      html,
-      status: "SENT",
-      attempts: 1,
-      sentAt,
-      providerMessageId: `seed-admin-${order.id}`,
-    },
+    select: { id: true },
   });
+  if (!adminEmailRow) {
+    await prisma.orderEmail.create({
+      data: {
+        orderId: order.id,
+        kind: "ADMIN",
+        to: adminEmail,
+        subject: `Seed order #${order.id} for admin`,
+        html,
+        status: "SENT",
+        attempts: 1,
+        sentAt,
+        providerMessageId: `seed-admin-${order.id}`,
+      },
+    });
+  }
 
-  await prisma.orderEmail.upsert({
+  const customerEmailRow = await prisma.orderEmail.findUnique({
     where: { orderId_kind: { orderId: order.id, kind: "CUSTOMER" } },
-    update: {
-      to: customerEmail,
-      subject: `Seed order #${order.id} confirmation`,
-      html,
-      status: "SENT",
-      attempts: 1,
-      lastError: null,
-      sentAt,
-      providerMessageId: `seed-customer-${order.id}`,
-    },
-    create: {
-      orderId: order.id,
-      kind: "CUSTOMER",
-      to: customerEmail,
-      subject: `Seed order #${order.id} confirmation`,
-      html,
-      status: "SENT",
-      attempts: 1,
-      sentAt,
-      providerMessageId: `seed-customer-${order.id}`,
-    },
+    select: { id: true },
   });
+  if (!customerEmailRow) {
+    await prisma.orderEmail.create({
+      data: {
+        orderId: order.id,
+        kind: "CUSTOMER",
+        to: customerEmail,
+        subject: `Seed order #${order.id} confirmation`,
+        html,
+        status: "SENT",
+        attempts: 1,
+        sentAt,
+        providerMessageId: `seed-customer-${order.id}`,
+      },
+    });
+  }
 
   return order.id;
 }

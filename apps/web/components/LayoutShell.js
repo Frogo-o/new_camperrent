@@ -6,7 +6,7 @@ import TopNav from "./TopNav";
 
 export default function LayoutShell({ children }) {
   const pathname = usePathname();
-  const isBare = pathname === "/" || pathname === "/maintenance" || pathname === "/admin/login";
+  const isBare = pathname === "/maintenance" || pathname === "/admin/login";
 
   return (
     <div className="min-h-screen">
