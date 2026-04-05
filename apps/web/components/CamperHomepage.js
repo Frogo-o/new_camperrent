@@ -185,7 +185,7 @@ export default async function CamperHomepage() {
           <div className="border-t border-slate-200 bg-slate-50 p-4 sm:p-6 lg:border-l lg:border-t-0">
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
               <img
-                src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1400&q=80"
+                src="/beautiful-campsite-mountains-with-rv-wooden-bench.jpg"
                 alt="Кемпер сред природа"
                 className="h-[260px] w-full object-cover sm:h-[340px] lg:h-[420px]"
               />
