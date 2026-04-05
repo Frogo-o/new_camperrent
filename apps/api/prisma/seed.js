@@ -6,227 +6,332 @@ const prisma = new PrismaClient({
   datasourceUrl: process.env.DATABASE_URL,
 });
 
-async function upsertCategoriesAndBrands() {
-  const categories = [
-    { name: "Интериор", slug: "interior" },
-    { name: "Електрика", slug: "electricity" },
-    { name: "Наем-Кемпер", slug: "camper-rent" },
-    { name: "Купи-Кемпер", slug: "buy-camper" },
-  ];
+const categories = [
+  { name: "Interior", slug: "interior", isActive: true },
+  { name: "Electricity", slug: "electricity", isActive: true },
+  { name: "Rent Camper", slug: "camper-rent", isActive: true },
+  { name: "Buy Camper", slug: "buy-camper", isActive: true },
+];
 
-  const brands = [
-    { name: "Thetford", slug: "thetford" },
-    { name: "Dometic", slug: "dometic" },
-  ];
+const brands = [
+  { name: "Dometic", slug: "dometic", isActive: true },
+  { name: "Fiamma", slug: "fiamma", isActive: true },
+  { name: "Thetford", slug: "thetford", isActive: true },
+];
 
-  for (const c of categories) {
-    await prisma.category.upsert({
-      where: { slug: c.slug },
-      update: { name: c.name },
-      create: c,
-    });
-  }
-
-  for (const b of brands) {
-    await prisma.brand.upsert({
-      where: { slug: b.slug },
-      update: { name: b.name },
-      create: b,
-    });
-  }
-
-  const [interior, electricity, camperRent, buyCamper, thetford, dometic] = await Promise.all([
-    prisma.category.findUnique({ where: { slug: "interior" }, select: { id: true, slug: true } }),
-    prisma.category.findUnique({ where: { slug: "electricity" }, select: { id: true, slug: true } }),
-    prisma.category.findUnique({ where: { slug: "camper-rent" }, select: { id: true, slug: true } }),
-    prisma.category.findUnique({ where: { slug: "buy-camper" }, select: { id: true, slug: true } }),
-    prisma.brand.findUnique({ where: { slug: "thetford" }, select: { id: true, slug: true } }),
-    prisma.brand.findUnique({ where: { slug: "dometic" }, select: { id: true, slug: true } }),
-  ]);
-
-  if (!interior || !electricity || !camperRent || !buyCamper || !thetford || !dometic) {
-    throw new Error("Seed failed: missing required categories/brands after upsert");
-  }
-
-  return { interior, electricity, camperRent, buyCamper, thetford, dometic };
+function joinUrl(base, path) {
+  const cleanBase = String(base || "").replace(/\/+$/, "");
+  const cleanPath = String(path || "").replace(/^\/+/, "");
+  return `${cleanBase}/${cleanPath}`;
 }
 
-async function upsertProductsAndImages({ interior, electricity, camperRent, buyCamper, thetford, dometic }) {
-  const products = [
-    // interior
+function publicAsset(pathname) {
+  const base = process.env.PUBLIC_BASE_URL || "http://localhost:4000";
+  const publicPath = process.env.PUBLIC_PATH || "/public";
+  return joinUrl(joinUrl(base, publicPath), pathname);
+}
+
+function seededProducts(refs) {
+  return [
     {
-      name: "Aqua Kem Blue",
-      slug: "aqua-kem-blue",
+      name: "Thetford Aqua Kem Blue",
+      slug: "thetford-aqua-kem-blue",
+      articleNumber: "TH-88910",
       description:
-        "Концентриран препарат за химическа тоалетна. Намалява миризми и подпомага разграждането на отпадъци.",
+        "Toilet fluid for cassette systems with a reliable fresh scent and practical concentrated formula.",
       price: 2900,
-      categoryId: interior.id,
-      brandId: thetford.id,
-      imageUrl: "https://via.placeholder.com/800x600?text=Aqua+Kem+Blue",
+      categoryId: refs.categories.interior.id,
+      brandId: refs.brands.thetford.id,
+      isActive: true,
+      images: [publicAsset("park/thumb-01.jpg"), publicAsset("park/thumb-02.jpg")],
+      infoFiles: [
+        {
+          url: publicAsset("agreements/DogovorBG.pdf"),
+          filename: "thetford-aqua-kem-blue-datasheet.pdf",
+          originalname: "Thetford Aqua Kem Blue datasheet.pdf",
+          mimetype: "application/pdf",
+          size: 125000,
+        },
+      ],
     },
     {
-      name: "Прозорец за каравана",
-      slug: "caravan-window",
-      description: "Прозорец за каравана с добро уплътнение и UV устойчивост. Подходящ за монтаж на различни панели.",
+      name: "Dometic Roof Window 700 x 500",
+      slug: "dometic-roof-window-700-500",
+      articleNumber: "DM-700500",
+      description:
+        "Roof window for camper and caravan retrofits with good daylight coverage and dependable sealing.",
       price: 49900,
-      categoryId: interior.id,
-      brandId: dometic.id,
-      imageUrl: "https://via.placeholder.com/800x600?text=Caravan+Window",
+      categoryId: refs.categories.interior.id,
+      brandId: refs.brands.dometic.id,
+      isActive: true,
+      images: [publicAsset("park/thumb-03.jpg"), publicAsset("park/thumb-04.jpg")],
+      infoFiles: [],
     },
-
-    // electricity
     {
-      name: "Букса 12V",
-      slug: "12v-socket",
-      description: "12V букса за каравани и кемпери. Подходяща за захранване на аксесоари и зарядни устройства.",
+      name: "12V Utility Socket",
+      slug: "12v-utility-socket",
+      articleNumber: "EL-12V-001",
+      description:
+        "Compact 12V socket for camper accessories, charging and low-power onboard equipment.",
       price: 850,
-      categoryId: electricity.id,
+      categoryId: refs.categories.electricity.id,
       brandId: null,
-      imageUrl: "https://via.placeholder.com/800x600?text=12V+Socket",
+      isActive: true,
+      images: [publicAsset("park/thumb-05.jpg")],
+      infoFiles: [],
     },
-
-    // camper-rent (RENT)
     {
-      name: "Наем на кемпер (Тест)",
-      slug: "rent-camper-test",
-      description: "Тест продукт за наемане на кемпер (за да работи RENT логиката по category slug).",
-      price: 69900,
-      categoryId: camperRent.id,
-      brandId: dometic.id,
-      imageUrl: "https://via.placeholder.com/800x600?text=Rent+Camper",
+      name: "Fiamma Battery Master Switch",
+      slug: "fiamma-battery-master-switch",
+      articleNumber: "FI-BAT-24",
+      description:
+        "Main disconnect switch for service batteries, useful for maintenance and long storage periods.",
+      price: 3200,
+      categoryId: refs.categories.electricity.id,
+      brandId: refs.brands.fiamma.id,
+      isActive: true,
+      images: [publicAsset("park/thumb-06.jpg")],
+      infoFiles: [],
     },
-
-    // buy-camper (BUY)
     {
-      name: "Купи кемпер (Тест)",
-      slug: "buy-camper-test",
-      description: "Тест продукт за купуване на кемпер (за да работи BUY логиката по category slug).",
-      price: 1234500,
-      categoryId: buyCamper.id,
-      brandId: dometic.id,
-      imageUrl: "https://via.placeholder.com/800x600?text=Buy+Camper",
+      name: "Camper for Rent 4 Berth",
+      slug: "camper-for-rent-4-berth",
+      articleNumber: "RENT-4B-01",
+      description:
+        "Seed rental listing for a 4 berth camper, suitable for validating rent-specific frontend and order flows.",
+      price: 17500,
+      categoryId: refs.categories["camper-rent"].id,
+      brandId: refs.brands.dometic.id,
+      isActive: true,
+      images: [publicAsset("about/camper.jpg"), publicAsset("park/hero.jpg")],
+      infoFiles: [
+        {
+          url: publicAsset("agreements/DogovorBG.pdf"),
+          filename: "camper-rent-terms.pdf",
+          originalname: "Rental terms.pdf",
+          mimetype: "application/pdf",
+          size: 280000,
+        },
+      ],
+    },
+    {
+      name: "Camper for Sale Premium",
+      slug: "camper-for-sale-premium",
+      articleNumber: "BUY-PREM-01",
+      description:
+        "Seed buy listing for a premium camper used to validate product detail pages and buy-category logic.",
+      price: 1435000,
+      categoryId: refs.categories["buy-camper"].id,
+      brandId: refs.brands.dometic.id,
+      isActive: true,
+      images: [publicAsset("about/camper.jpg"), publicAsset("park/thumb-02.jpg")],
+      infoFiles: [
+        {
+          url: publicAsset("agreements/DogovorBG.pdf"),
+          filename: "camper-sale-specification.pdf",
+          originalname: "Camper sale specification.pdf",
+          mimetype: "application/pdf",
+          size: 340000,
+        },
+      ],
     },
   ];
+}
 
-  const createdProducts = [];
-  for (const p of products) {
-    const created = await prisma.product.upsert({
-      where: { slug: p.slug },
+async function upsertLookups() {
+  for (const category of categories) {
+    await prisma.category.upsert({
+      where: { slug: category.slug },
       update: {
-        name: p.name,
-        description: p.description,
-        price: p.price,
-        isActive: true,
-        categoryId: p.categoryId,
-        brandId: p.brandId,
+        name: category.name,
+        isActive: category.isActive,
+      },
+      create: category,
+    });
+  }
+
+  for (const brand of brands) {
+    await prisma.brand.upsert({
+      where: { slug: brand.slug },
+      update: {
+        name: brand.name,
+        isActive: brand.isActive,
+      },
+      create: brand,
+    });
+  }
+
+  const categoryRows = await prisma.category.findMany({
+    where: { slug: { in: categories.map((x) => x.slug) } },
+    select: { id: true, slug: true, name: true },
+  });
+
+  const brandRows = await prisma.brand.findMany({
+    where: { slug: { in: brands.map((x) => x.slug) } },
+    select: { id: true, slug: true, name: true },
+  });
+
+  return {
+    categories: Object.fromEntries(categoryRows.map((row) => [row.slug, row])),
+    brands: Object.fromEntries(brandRows.map((row) => [row.slug, row])),
+  };
+}
+
+async function upsertCatalogData(refs) {
+  const products = seededProducts(refs);
+  const seeded = [];
+
+  for (const product of products) {
+    const saved = await prisma.product.upsert({
+      where: { slug: product.slug },
+      update: {
+        name: product.name,
+        articleNumber: product.articleNumber,
+        description: product.description,
+        price: product.price,
+        isActive: product.isActive,
+        categoryId: product.categoryId,
+        brandId: product.brandId,
       },
       create: {
-        name: p.name,
-        slug: p.slug,
-        description: p.description,
-        price: p.price,
-        isActive: true,
-        categoryId: p.categoryId,
-        brandId: p.brandId,
+        name: product.name,
+        slug: product.slug,
+        articleNumber: product.articleNumber,
+        description: product.description,
+        price: product.price,
+        isActive: product.isActive,
+        categoryId: product.categoryId,
+        brandId: product.brandId,
       },
-      select: { id: true, name: true, slug: true, price: true },
+      select: { id: true, slug: true, name: true, price: true },
     });
 
-    await prisma.productImage.deleteMany({ where: { productId: created.id } });
-    await prisma.productImage.create({
-      data: { productId: created.id, url: p.imageUrl, sortOrder: 0 },
-      select: { id: true },
-    });
+    await prisma.productImage.deleteMany({ where: { productId: saved.id } });
+    await prisma.productInfoFile.deleteMany({ where: { productId: saved.id } });
 
-    createdProducts.push(created);
+    if (product.images.length > 0) {
+      await prisma.productImage.createMany({
+        data: product.images.map((url, index) => ({
+          productId: saved.id,
+          url,
+          sortOrder: index,
+        })),
+      });
+    }
+
+    if (product.infoFiles.length > 0) {
+      await prisma.productInfoFile.createMany({
+        data: product.infoFiles.map((file, index) => ({
+          productId: saved.id,
+          url: file.url,
+          filename: file.filename,
+          originalname: file.originalname,
+          mimetype: file.mimetype,
+          size: file.size,
+          sortOrder: index,
+        })),
+      });
+    }
+
+    seeded.push(saved);
   }
 
-  return createdProducts;
+  return seeded;
 }
 
-async function upsertTestOrderWithItemsAndEmails(products) {
-  const testEmail = "test.order@camperrent.local";
-  const testPhone = "0000000000";
+async function upsertSampleOrder(products) {
+  const bySlug = Object.fromEntries(products.map((product) => [product.slug, product]));
+  const rentProduct = bySlug["camper-for-rent-4-berth"];
+  const accessoryProduct = bySlug["thetford-aqua-kem-blue"];
 
-  const p1 = products.find((p) => p.slug === "aqua-kem-blue");
-  const p2 = products.find((p) => p.slug === "12v-socket");
-  if (!p1 || !p2) throw new Error("Seed failed: expected products not found");
+  if (!rentProduct || !accessoryProduct) {
+    throw new Error("Missing required seeded products for sample order");
+  }
 
   const items = [
-    { productId: p1.id, qty: 2, unitPrice: p1.price },
-    { productId: p2.id, qty: 1, unitPrice: p2.price },
+    { productId: rentProduct.id, qty: 1, unitPrice: rentProduct.price },
+    { productId: accessoryProduct.id, qty: 2, unitPrice: accessoryProduct.price },
   ];
 
-  const subtotal = items.reduce((sum, it) => sum + it.qty * it.unitPrice, 0);
+  const subtotal = items.reduce((sum, item) => sum + item.qty * item.unitPrice, 0);
   const deliveryFee = 0;
   const total = subtotal + deliveryFee;
+  const customerEmail = "staging.order@camper-rent.bg";
+  const customerPhone = "+359888000111";
 
   let order = await prisma.order.findFirst({
-    where: { email: testEmail, phone: testPhone, status: "NEW" },
+    where: {
+      email: customerEmail,
+      phone: customerPhone,
+      note: "Seed sample order",
+    },
     select: { id: true },
   });
 
   if (!order) {
     order = await prisma.order.create({
       data: {
-        customerName: "Test Customer",
-        email: testEmail,
-        phone: testPhone,
-        address: "Test Address 1",
-        deliveryMethod: "COURIER",
-        note: "Seed test order",
-        status: "NEW",
+        customerName: "Staging Customer",
+        email: customerEmail,
+        phone: customerPhone,
+        address: "15 Tsarigradsko Shose Blvd, Sofia",
+        deliveryMethod: "PICKUP",
+        note: "Seed sample order",
         subtotal,
         deliveryFee,
         total,
+        rentalPlace: "Sofia",
+        rentalFrom: new Date("2026-05-10T09:00:00.000Z"),
+        rentalTo: new Date("2026-05-15T09:00:00.000Z"),
+        country: "Bulgaria",
+        city: "Sofia",
+        postalCode: "1784",
+        street: "Tsarigradsko Shose Blvd 15",
+        expectedMileageKm: 800,
+        visitCountries: "Bulgaria, Greece",
+        rentalAccessories: "Camping chairs, outdoor table, bike rack",
       },
       select: { id: true },
     });
   } else {
     await prisma.order.update({
       where: { id: order.id },
-      data: { subtotal, deliveryFee, total },
-      select: { id: true },
+      data: {
+        subtotal,
+        deliveryFee,
+        total,
+      },
     });
   }
 
   await prisma.orderItem.deleteMany({ where: { orderId: order.id } });
   await prisma.orderItem.createMany({
-    data: items.map((it) => ({
+    data: items.map((item) => ({
       orderId: order.id,
-      productId: it.productId,
-      qty: it.qty,
-      unitPrice: it.unitPrice,
-      lineTotal: it.qty * it.unitPrice,
+      productId: item.productId,
+      qty: item.qty,
+      unitPrice: item.unitPrice,
+      lineTotal: item.qty * item.unitPrice,
     })),
   });
 
-  const emailOrder = {
-    id: order.id,
-    customerName: "Test Customer",
-    email: testEmail,
-    phone: testPhone,
-    address: "Test Address 1",
-    deliveryMethod: "COURIER",
-    note: "Seed test order",
-    subtotal,
-    deliveryFee,
-    total,
-    items: [
-      { productName: p1.name, qty: 2, price: p1.price, total: 2 * p1.price, categorySlug: "interior", categoryName: "Интериор" },
-      { productName: p2.name, qty: 1, price: p2.price, total: 1 * p2.price, categorySlug: "electricity", categoryName: "Електрика" },
-    ],
-  };
-
-  const adminTo = process.env.ORDERS_EMAIL_TO || "info@camper-rent.bg";
   const sentAt = new Date();
+  const adminEmail = process.env.ORDERS_EMAIL_TO || "info@camper-rent.bg";
+  const html = [
+    "<h1>Seed sample order</h1>",
+    `<p>Order #${order.id}</p>`,
+    "<ul>",
+    `<li>${rentProduct.name} x 1</li>`,
+    `<li>${accessoryProduct.name} x 2</li>`,
+    "</ul>",
+  ].join("");
 
   await prisma.orderEmail.upsert({
     where: { orderId_kind: { orderId: order.id, kind: "ADMIN" } },
     update: {
-      to: adminTo,
-      subject: `Нова поръчка #${order.id}`,
-      html: `<pre>${JSON.stringify(emailOrder, null, 2)}</pre>`,
+      to: adminEmail,
+      subject: `Seed order #${order.id} for admin`,
+      html,
       status: "SENT",
       attempts: 1,
       lastError: null,
@@ -236,9 +341,9 @@ async function upsertTestOrderWithItemsAndEmails(products) {
     create: {
       orderId: order.id,
       kind: "ADMIN",
-      to: adminTo,
-      subject: `Нова поръчка #${order.id}`,
-      html: `<pre>${JSON.stringify(emailOrder, null, 2)}</pre>`,
+      to: adminEmail,
+      subject: `Seed order #${order.id} for admin`,
+      html,
       status: "SENT",
       attempts: 1,
       sentAt,
@@ -249,9 +354,9 @@ async function upsertTestOrderWithItemsAndEmails(products) {
   await prisma.orderEmail.upsert({
     where: { orderId_kind: { orderId: order.id, kind: "CUSTOMER" } },
     update: {
-      to: testEmail,
-      subject: `Вашата поръчка #${order.id} е получена`,
-      html: `<pre>${JSON.stringify(emailOrder, null, 2)}</pre>`,
+      to: customerEmail,
+      subject: `Seed order #${order.id} confirmation`,
+      html,
       status: "SENT",
       attempts: 1,
       lastError: null,
@@ -261,12 +366,11 @@ async function upsertTestOrderWithItemsAndEmails(products) {
     create: {
       orderId: order.id,
       kind: "CUSTOMER",
-      to: testEmail,
-      subject: `Вашата поръчка #${order.id} е получена`,
-      html: `<pre>${JSON.stringify(emailOrder, null, 2)}</pre>`,
+      to: customerEmail,
+      subject: `Seed order #${order.id} confirmation`,
+      html,
       status: "SENT",
       attempts: 1,
-      lastError: null,
       sentAt,
       providerMessageId: `seed-customer-${order.id}`,
     },
@@ -276,18 +380,20 @@ async function upsertTestOrderWithItemsAndEmails(products) {
 }
 
 async function main() {
-  const refs = await upsertCategoriesAndBrands();
-  const products = await upsertProductsAndImages(refs);
-  const orderId = await upsertTestOrderWithItemsAndEmails(products);
+  const refs = await upsertLookups();
+  const products = await upsertCatalogData(refs);
+  const orderId = await upsertSampleOrder(products);
 
   console.log("Seed OK");
-  console.log("Products:", products.map((p) => p.slug).join(", "));
-  console.log("Order ID:", orderId);
+  console.log(`Categories: ${Object.keys(refs.categories).join(", ")}`);
+  console.log(`Brands: ${Object.keys(refs.brands).join(", ")}`);
+  console.log(`Products: ${products.map((product) => product.slug).join(", ")}`);
+  console.log(`Sample order: ${orderId}`);
 }
 
 main()
-  .catch((e) => {
-    console.error("Seed FAILED:", e);
+  .catch((error) => {
+    console.error("Seed FAILED:", error);
     process.exitCode = 1;
   })
   .finally(async () => {
