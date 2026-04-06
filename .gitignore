@@ -37,9 +37,10 @@ next-env.d.ts
 .vercel/
 
 # Runtime and temporary app data
-tmp/
-uploads/
-info-files/
+apps/api/tmp/
+apps/api/uploads/
+apps/api/info-files/
+apps/web/tmp/
 
 # Prisma generated client output
 src/generated/prisma/
