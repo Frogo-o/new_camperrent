@@ -24,14 +24,14 @@ const server = app.listen(port, "127.0.0.1", () => {
   console.log(`API running on http://localhost:${port}`);
 });
 
-setInterval(() => {
+const emailWorkerInterval = setInterval(() => {
   processPendingOrderEmails(10).catch((e) => console.log("[EMAIL WORKER]", e));
 }, 30000);
 
 
 async function shutdown() {
   console.log("Shutting down...");
-  clearInterval(interval);
+  clearInterval(emailWorkerInterval);
 
   server.close(async () => {
     await shutdownDb();

@@ -1,5 +1,21 @@
 import { NextResponse } from "next/server";
 
+const DEFAULT_BLOCKED_BOT_PATTERNS = [
+  "TikTokSpider",
+  "Bytespider",
+  "AhrefsBot",
+  "SemrushBot",
+  "MJ12bot",
+  "DotBot",
+  "PetalBot",
+  "BLEXBot",
+  "DataForSeoBot",
+  "ClaudeBot",
+  "GPTBot",
+  "CCBot",
+  "Amazonbot",
+];
+
 function hasAdminTokenCookie(req) {
   const cookie = req.headers.get("cookie") || "";
   return /(?:^|;\s*)admin_token=/.test(cookie);
@@ -7,6 +23,19 @@ function hasAdminTokenCookie(req) {
 
 function isPublicFile(pathname) {
   return /\.[a-zA-Z0-9]+$/.test(pathname);
+}
+
+const extraBlockedBotPatterns = String(process.env.BLOCKED_BOT_UA_PATTERNS || "")
+  .split(",")
+  .map((x) => x.trim())
+  .filter(Boolean);
+const blockedBotPatterns = [...DEFAULT_BLOCKED_BOT_PATTERNS, ...extraBlockedBotPatterns].map(
+  (pattern) => new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i")
+);
+
+function isBlockedRequest(req) {
+  const ua = req.headers.get("user-agent") || "";
+  return blockedBotPatterns.some((pattern) => pattern.test(ua));
 }
 
 const MAINTENANCE = false;
@@ -22,6 +51,13 @@ export function middleware(req) {
     isPublicFile(pathname)
   ) {
     return NextResponse.next();
+  }
+
+  if (isBlockedRequest(req)) {
+    return new NextResponse("Forbidden", {
+      status: 403,
+      headers: { "cache-control": "public, max-age=3600" },
+    });
   }
 
   if (pathname.startsWith("/api")) return NextResponse.next();
