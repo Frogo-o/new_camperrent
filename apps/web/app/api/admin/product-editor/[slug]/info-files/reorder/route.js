@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { revalidatePublicCatalog } from "../../../../../../lib/catalog-cache";
+import { revalidatePublicCatalog } from "../../../../../../../lib/catalog-cache";
 
 export const runtime = "nodejs";
 
