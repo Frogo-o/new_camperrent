@@ -5,7 +5,6 @@ import { PriceEURWithBGN } from "./Price";
 const partnerLogos = [
   { src: "/fiamma.png", alt: "Fiamma" },
   { src: "/dometic.png", alt: "Dometic" },
-  { src: "/truma.png", alt: "Truma" },
   { src: "/THETFORD.png", alt: "Thetford" },
   { src: "/Reimo.jpg", alt: "Reimo" },
   { src: "/logo-aplast.png", alt: "Aplast" },
