@@ -61,21 +61,6 @@ export default function AppFooter() {
                 info@camper-rent.bg
               </a>
             </div>
-
-            <div className="mt-6">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Последвай ни</p>
-              <div className="flex gap-3 text-lg text-slate-500">
-                <a aria-label="Facebook" className="transition hover:text-sky-600" href="https://www.facebook.com/" target="_blank" rel="noreferrer">
-                  f
-                </a>
-                <a aria-label="Instagram" className="transition hover:text-sky-600" href="https://www.instagram.com/" target="_blank" rel="noreferrer">
-                  i
-                </a>
-                <a aria-label="YouTube" className="transition hover:text-sky-600" href="https://www.youtube.com/" target="_blank" rel="noreferrer">
-                  y
-                </a>
-              </div>
-            </div>
           </div>
 
           <FooterLinkList title="Категории" items={footerLinks.categories} />

@@ -2,7 +2,20 @@ import Link from "next/link";
 import { getProducts } from "../lib/api";
 import { PriceEURWithBGN } from "./Price";
 
-const partnerLogos = ["Thule", "Fiamma", "Dometic", "Truma", "Thetford", "Reimo", "Berger", "Airva", "Royal", "Reich", "Mata", "Aplast", "Carbest"];
+const partnerLogos = [
+  { src: "/fiamma.png", alt: "Fiamma" },
+  { src: "/dometic.png", alt: "Dometic" },
+  { src: "/truma.png", alt: "Truma" },
+  { src: "/THETFORD.png", alt: "Thetford" },
+  { src: "/Reimo.jpg", alt: "Reimo" },
+  { src: "/logo-aplast.png", alt: "Aplast" },
+  { src: "/carbest-logo.jpg", alt: "Carbest" },
+  { src: "/COMET.jpg", alt: "Comet" },
+  { src: "/MAPA.png", alt: "Mapa" },
+  { src: "/Plastoform.jpg", alt: "Plastoform" },
+  { src: "/GIOCAMPER.png", alt: "Giocamper" },
+  { src: "/habawestacc-combilogo.jpg", alt: "HabaWest" },
+];
 
 const shopCategories = [
   {
@@ -24,21 +37,6 @@ const shopCategories = [
     title: "Кухня и къмпинг оборудване",
     text: "Готварски и практични аксесоари за удобство навсякъде.",
     icon: "🍳",
-  },
-];
-
-const reviews = [
-  {
-    name: "Мария Петрова",
-    text: "Лесен процес, много добро отношение и кемпер в отлично състояние. Бих резервирала отново.",
-  },
-  {
-    name: "Ивайло Георгиев",
-    text: "Поръчахме и оборудване, и кемпер под наем. Всичко беше удобно и добре организирано.",
-  },
-  {
-    name: "Симеон Димитров",
-    text: "Харесва ми, че на едно място има магазин, наеми и идеи за собствен кемпер.",
   },
 ];
 
@@ -236,10 +234,10 @@ export default async function CamperHomepage() {
                   <div className="partner-marquee-track flex items-center gap-4 whitespace-nowrap pr-4">
                     {[...partnerLogos, ...partnerLogos].map((logo, index) => (
                       <div
-                        key={`${logo}-${index}`}
-                        className="flex h-14 items-center justify-center rounded-full border border-[#dcecff] bg-[#f9fcff] px-5 text-sm font-medium text-[#2f658e] opacity-70 transition hover:opacity-100"
+                        key={`${logo.src}-${index}`}
+                        className="flex h-16 items-center justify-center rounded-full border border-[#dcecff] bg-[#f9fcff] px-5 opacity-70 transition hover:opacity-100"
                       >
-                        {logo}
+                        <img src={logo.src} alt={logo.alt} className="h-8 w-auto object-contain sm:h-10" />
                       </div>
                     ))}
                   </div>
@@ -414,26 +412,6 @@ export default async function CamperHomepage() {
                 />
               </>
             )}
-          </div>
-        </section>
-
-        <section id="reviews" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-[#00A6F4]">Ревюта</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#2f658e] sm:text-4xl">Какво споделят нашите клиенти</h2>
-            </div>
-            <div className="text-sm text-slate-400">★ 4.9/5 средна оценка</div>
-          </div>
-
-          <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            {reviews.map((review) => (
-              <article key={review.name} className="rounded-[2rem] border border-[#dcecff] bg-white p-7 shadow-[0_10px_30px_rgba(41,89,129,0.06)]">
-                <div className="text-lg text-[#f0a61c]">★★★★★</div>
-                <p className="mt-5 leading-8 text-slate-600">“{review.text}”</p>
-                <div className="mt-6 text-sm font-medium text-[#2f658e]">{review.name}</div>
-              </article>
-            ))}
           </div>
         </section>
 
