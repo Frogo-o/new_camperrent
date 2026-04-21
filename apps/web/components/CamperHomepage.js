@@ -136,13 +136,13 @@ function BuyCard({ product }) {
 
   return (
     <article className="rounded-[2rem] border border-[#dcecff] bg-white p-6 shadow-[0_10px_30px_rgba(41,89,129,0.06)]">
-      <div className="flex items-start justify-between gap-4">
-        <span className="rounded-full border border-[#bfe7fb] bg-[#eef9ff] px-3 py-1 text-xs font-medium text-[#00A6F4]">
+      <div className="relative">
+        <img src={getProductImage(product)} alt={product?.name || "Кемпер за покупка"} className="h-72 w-full object-cover rounded-[1.5rem]" />
+        <div className="absolute left-4 top-4 rounded-full border border-[#bfe7fb] bg-[#eef9ff] px-3 py-1 text-xs font-medium text-[#00A6F4]">
           Наличен
-        </span>
-        <div className="text-right text-sm text-slate-400">Запитване за лизинг</div>
+        </div>
       </div>
-      <h3 className="mt-8 text-2xl font-semibold text-[#2f658e]">{product?.name || "Кемпер за покупка"}</h3>
+      <h3 className="mt-6 text-2xl font-semibold text-[#2f658e]">{product?.name || "Кемпер за покупка"}</h3>
       <p className="mt-3 text-slate-500">{getBuyMeta(product)}</p>
       <div className="mt-8 text-2xl font-semibold text-[#00A6F4]">
         <PriceEURWithBGN cents={product?.price} />
@@ -234,7 +234,7 @@ export default async function CamperHomepage() {
                     {[...partnerLogos, ...partnerLogos].map((logo, index) => (
                       <div
                         key={`${logo.src}-${index}`}
-                        className="flex items-center justify-center opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0"
+                        className="flex items-center justify-center transition"
                       >
                         <img src={logo.src} alt={logo.alt} className="h-12 w-auto object-contain" />
                       </div>
