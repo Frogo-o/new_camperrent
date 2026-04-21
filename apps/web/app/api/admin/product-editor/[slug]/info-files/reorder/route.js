@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePublicCatalog } from "../../../../../../lib/catalog-cache";
 
 export const runtime = "nodejs";
 
@@ -30,6 +31,10 @@ export async function PUT(req, ctx) {
   });
 
   const body = await res.text();
+
+  if (res.ok) {
+    revalidatePublicCatalog({ productSlugs: [slug] });
+  }
 
   return new NextResponse(body, {
     status: res.status,

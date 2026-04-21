@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { CATALOG_PRODUCTS_TAG } from "../../../../lib/catalog-cache";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:4000";
 const PUBLIC_CACHE_CONTROL = "public, max-age=60, s-maxage=300, stale-while-revalidate=86400";
@@ -10,7 +11,7 @@ export async function GET(req) {
     const url = new URL(req.url);
     const target = `${API_BASE_URL}/api/catalog/products${url.search}`;
 
-    const res = await fetch(target, { next: { revalidate: 300 } });
+    const res = await fetch(target, { next: { revalidate: 300, tags: [CATALOG_PRODUCTS_TAG] } });
     const body = await res.text();
 
     return new NextResponse(body, {

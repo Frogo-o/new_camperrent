@@ -2,39 +2,58 @@ import Link from "next/link";
 import { getProducts } from "../lib/api";
 import { PriceEURWithBGN } from "./Price";
 
-const partnerLogos = ["Thule", "Fiamma", "Dometic", "Truma", "Thetford", "Reimo", "Berger", "Reich", "Carbest"];
+const partnerLogos = ["Thule", "Fiamma", "Dometic", "Truma", "Thetford", "Reimo", "Berger", "Airva", "Royal", "Reich", "Mata", "Aplast", "Carbest"];
 
 const shopCategories = [
   {
     title: "Тенти и маркизи",
-    text: "Решения за сянка, комфорт и повече свобода при престой и пътуване.",
+    text: "Практични решения за сянка, комфорт и повече свобода на къмпинг.",
+    icon: "☀",
   },
   {
     title: "Вода и санитария",
-    text: "Резервоари, душове, тоалетни и системи за по-независим кемпер живот.",
+    text: "Резервоари, душове, тоалетни и всичко нужно за независимост по пътя.",
+    icon: "💧",
   },
   {
     title: "Ток и осветление",
-    text: "Батерии, осветление, зарядни и практични електрически решения.",
+    text: "Батерии, кабели, осветление и енергийни решения за кемпер живот.",
+    icon: "⚡",
   },
   {
-    title: "Кухня и оборудване",
-    text: "Практични аксесоари за готвене, съхранение и удобство навсякъде.",
+    title: "Кухня и къмпинг оборудване",
+    text: "Готварски и практични аксесоари за удобство навсякъде.",
+    icon: "🍳",
+  },
+];
+
+const reviews = [
+  {
+    name: "Мария Петрова",
+    text: "Лесен процес, много добро отношение и кемпер в отлично състояние. Бих резервирала отново.",
+  },
+  {
+    name: "Ивайло Георгиев",
+    text: "Поръчахме и оборудване, и кемпер под наем. Всичко беше удобно и добре организирано.",
+  },
+  {
+    name: "Симеон Димитров",
+    text: "Харесва ми, че на едно място има магазин, наеми и идеи за собствен кемпер.",
   },
 ];
 
 const steps = [
   {
     title: "Планиране",
-    text: "Разпределение, изолация и основни системи според начина, по който ще се използва кемперът.",
+    text: "Конфигурацията на твоя кемпер - разпределение, изолация и основни системи.",
   },
   {
     title: "Оборудване",
-    text: "Електричество, вода, отопление и санитария, подбрани така, че проектът да е практичен и надежден.",
+    text: "Електрически системи, осветление, вода, отопление, тоалетна и всички необходими уреди за комфорт и автономност.",
   },
   {
     title: "Изграждане",
-    text: "Интериор, мебели и довършителни детайли за завършен и готов за път проект.",
+    text: "Интериор, мебели и всички детайли за практични решения и уверен старт на пътя.",
   },
 ];
 
@@ -48,86 +67,95 @@ async function safeGetProducts(params) {
 }
 
 function getProductImage(product) {
-  return product?.images?.[0]?.url || "";
+  return product?.images?.[0]?.url || "/beautiful-campsite-mountains-with-rv-wooden-bench.jpg";
 }
 
-function getProductMeta(product, fallback) {
+function getRentMeta(product) {
+  return product?.brand?.name || product?.articleNumber || "Напълно оборудван кемпер";
+}
+
+function getBuyMeta(product) {
   const bits = [product?.brand?.name, product?.articleNumber].filter(Boolean);
-  return bits.length ? bits.join(" • ") : fallback;
+  return bits.length ? bits.join(" • ") : "Актуална оферта";
 }
 
-function SectionHeading({ eyebrow, title, href, linkLabel }) {
-  return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600">{eyebrow}</div>
-        <h2 className="mt-2 text-2xl font-bold text-slate-900">{title}</h2>
-      </div>
-
-      {href && linkLabel ? (
-        <Link className="text-sm font-medium text-sky-700 underline-offset-4 hover:underline" href={href}>
-          {linkLabel}
-        </Link>
-      ) : null}
-    </div>
-  );
-}
-
-function ProductShowcaseCard({ product, kind }) {
-  const image = getProductImage(product);
-  const href = product?.slug ? `/product/${product.slug}` : kind === "rent" ? "/rent" : "/buy";
-  const title = product?.name || (kind === "rent" ? "Кемпер под наем" : "Кемпер за покупка");
-  const meta = getProductMeta(product, kind === "rent" ? "Актуално предложение под наем" : "Актуална оферта");
-  const linkText = kind === "rent" ? "Виж детайли" : "Виж оферта";
-
+function ProductCta({ href, label, kind }) {
   return (
     <Link
       href={href}
-      className="group block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+      className={
+        kind === "rent"
+          ? "rounded-full bg-[#f0a61c] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#df9918]"
+          : "rounded-full bg-[#00A6F4] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#0298df]"
+      }
     >
-      <div className="aspect-[4/3] overflow-hidden bg-slate-50">
-        {image ? (
-          <img src={image} alt={title} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]" />
-        ) : (
-          <div className="flex h-full items-center justify-center text-sm text-slate-400">Няма снимка</div>
-        )}
-      </div>
-
-      <div className="grid gap-2 p-4">
-        <div className="text-xs uppercase tracking-[0.16em] text-slate-500">{meta}</div>
-        <div className="line-clamp-2 min-h-[3.25rem] text-lg font-semibold leading-6 text-slate-900">{title}</div>
-
-        <div className="flex items-end justify-between gap-3 pt-1">
-          <PriceEURWithBGN cents={product?.price} />
-          <span className="text-sm font-medium text-sky-700">{linkText}</span>
-        </div>
-      </div>
+      {label}
     </Link>
   );
 }
 
-function EmptyProductCard({ title, href }) {
+function EmptyStateCard({ title, text, href, cta }) {
   return (
-    <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-      <div className="text-base font-semibold text-slate-900">{title}</div>
-      <p className="mt-2 text-sm leading-7 text-slate-600">Когато добавиш активни продукти в тази категория, те ще се покажат тук автоматично.</p>
-      <Link className="mt-4 inline-flex text-sm font-medium text-sky-700 underline-offset-4 hover:underline" href={href}>
-        Отвори секцията
+    <article className="rounded-[1.5rem] border border-[#dcecff] bg-white p-6 shadow-[0_10px_30px_rgba(41,89,129,0.06)]">
+      <h3 className="text-2xl font-semibold text-[#2f658e]">{title}</h3>
+      <p className="mt-4 leading-7 text-slate-600">{text}</p>
+      <Link href={href} className="mt-8 inline-flex rounded-full border border-[#cfeaff] bg-[#f3fbff] px-5 py-3 text-sm font-medium text-[#00A6F4] transition hover:bg-[#e9f7ff]">
+        {cta}
       </Link>
-    </div>
+    </article>
   );
 }
 
-function ServiceCard({ title, text, href, linkLabel }) {
+function RentCard({ product }) {
+  const href = product?.slug ? `/product/${product.slug}` : "/rent";
+
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="h-1 w-14 rounded-full bg-sky-500" />
-      <h3 className="mt-5 text-xl font-semibold text-slate-900">{title}</h3>
-      <p className="mt-3 text-sm leading-7 text-slate-600">{text}</p>
-      <Link className="mt-5 inline-flex text-sm font-medium text-sky-700 underline-offset-4 hover:underline" href={href}>
-        {linkLabel}
-      </Link>
-    </div>
+    <article className="overflow-hidden rounded-[2rem] border border-[#dcecff] bg-white shadow-[0_10px_30px_rgba(41,89,129,0.06)] transition hover:-translate-y-1 hover:shadow-[0_14px_40px_rgba(41,89,129,0.10)]">
+      <div className="relative">
+        <img src={getProductImage(product)} alt={product?.name || "Кемпер под наем"} className="h-72 w-full object-cover" />
+        <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#2f658e] shadow-sm">
+          Кемпер под наем
+        </div>
+      </div>
+      <div className="p-6">
+        <h3 className="text-2xl font-semibold text-[#2f658e]">{product?.name || "Кемпер под наем"}</h3>
+        <p className="mt-2 text-slate-500">{getRentMeta(product)}</p>
+        <div className="mt-6 flex items-end justify-between gap-4">
+          <div>
+            <div className="text-sm text-slate-400">Цена</div>
+            <div className="text-[#00A6F4]">
+              <PriceEURWithBGN cents={product?.price} />
+            </div>
+          </div>
+          <ProductCta href={href} label="Виж детайли" kind="rent" />
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function BuyCard({ product }) {
+  const href = product?.slug ? `/product/${product.slug}` : "/buy";
+
+  return (
+    <article className="overflow-hidden rounded-[2rem] border border-[#dcecff] bg-white shadow-[0_10px_30px_rgba(41,89,129,0.06)] transition hover:-translate-y-1 hover:shadow-[0_14px_40px_rgba(41,89,129,0.10)]">
+      <div className="relative">
+        <img src={getProductImage(product)} alt={product?.name || "Кемпер за покупка"} className="h-72 w-full object-cover" />
+        <div className="absolute left-4 top-4 rounded-full border border-[#bfe7fb] bg-[#eef9ff] px-3 py-1 text-xs font-medium text-[#00A6F4]">
+          Наличен
+        </div>
+      </div>
+      <div className="p-6">
+        <h3 className="text-2xl font-semibold text-[#2f658e]">{product?.name || "Кемпер за покупка"}</h3>
+        <p className="mt-3 text-slate-500">{getBuyMeta(product)}</p>
+        <div className="mt-8 flex items-end justify-between gap-4">
+          <div className="text-[#00A6F4]">
+            <PriceEURWithBGN cents={product?.price} />
+          </div>
+          <ProductCta href={href} label="Виж оферта" kind="buy" />
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -138,164 +166,289 @@ export default async function CamperHomepage() {
   ]);
 
   return (
-    <div className="space-y-8">
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="grid lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="flex flex-col justify-center p-6 sm:p-8 lg:p-10">
-            <div className="mb-4 inline-flex w-fit rounded-full bg-sky-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
-              Магазин • Наеми • Покупка
-            </div>
+    <div className="min-h-screen bg-[#f7fbff] text-slate-900">
+      <style>{`
+        @keyframes partner-scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .partner-marquee-track {
+          animation: partner-scroll 28s linear infinite;
+          width: max-content;
+        }
+        .partner-marquee:hover .partner-marquee-track {
+          animation-play-state: paused;
+        }
+      `}</style>
 
-            <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-              Всичко за кемпери, каравани и пътуване на едно място
-            </h1>
-
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-              Разгледай оборудване, актуални кемпери под наем и предложения за покупка в същия стил и структура като останалата част от сайта.
-            </p>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link className="rounded-lg bg-sky-500 px-5 py-3 text-sm font-medium text-white transition hover:bg-sky-600" href="/store">
-                Към магазина
-              </Link>
-              <Link className="rounded-lg border border-slate-300 px-5 py-3 text-sm font-medium text-slate-800 transition hover:bg-slate-50" href="/rent">
-                Виж наеми
-              </Link>
-              <Link className="rounded-lg border border-slate-300 px-5 py-3 text-sm font-medium text-slate-800 transition hover:bg-slate-50" href="/buy">
-                Виж оферти
-              </Link>
-            </div>
-
-            <div className="mt-8 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <div className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-700">Store</div>
-                <div className="mt-2 text-base font-semibold text-slate-900">Оборудване и аксесоари</div>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <div className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-700">Rent</div>
-                <div className="mt-2 text-base font-semibold text-slate-900">Готови кемпери за път</div>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <div className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-700">Buy</div>
-                <div className="mt-2 text-base font-semibold text-slate-900">Оферти от каталога</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-slate-200 bg-slate-50 p-4 sm:p-6 lg:border-l lg:border-t-0">
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <img
-                src="/beautiful-campsite-mountains-with-rv-wooden-bench.jpg"
-                alt="Кемпер сред природа"
-                className="h-[260px] w-full object-cover sm:h-[340px] lg:h-[420px]"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="rounded-2xl border border-slate-200 bg-sky-50/70 p-5 shadow-sm">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">Официални партньори</div>
-            <p className="mt-2 text-sm text-slate-600">Марки и производители, които вече присъстват в каталога и сервизните решения.</p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {partnerLogos.map((logo) => (
-              <span key={logo} className="rounded-full border border-sky-200 bg-white px-3 py-1.5 text-sm text-slate-700">
-                {logo}
+      <main>
+        <section className="relative overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)]">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(0,166,244,0.11),transparent_26%),radial-gradient(circle_at_top_right,rgba(240,166,28,0.14),transparent_24%)]" />
+          <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:grid-cols-[1.02fr_0.98fr] lg:px-8 lg:py-24">
+            <div className="relative z-10 flex flex-col justify-center">
+              <span className="mb-5 inline-flex w-fit rounded-full border border-[#d9efff] bg-[#eef8ff] px-4 py-2 text-xs uppercase tracking-[0.2em] text-[#32719f]">
+                ОБОРУДВАНЕ · НАЕМИ КЕМПЕР · КУПИ КЕМПЕР
               </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-3">
-        <ServiceCard
-          title="Онлайн магазин"
-          text="Категории, марки и продукти, подредени по същата логика като каталога, за да стигаш по-бързо до правилното оборудване."
-          href="/store"
-          linkLabel="Към магазина"
-        />
-        <ServiceCard
-          title="Кемпери под наем"
-          text="Актуални предложения, взети директно от backend каталога, за да не поддържаме отделно съдържание само за началната страница."
-          href="/rent"
-          linkLabel="Към наемите"
-        />
-        <ServiceCard
-          title="Кемпери и каравани за покупка"
-          text="Офертите се зареждат по същия модел и можеш да продължиш към detail страниците без отделен маркетингов слой."
-          href="/buy"
-          linkLabel="Към офертите"
-        />
-      </section>
-
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <SectionHeading eyebrow="Магазин" title="Основни категории" href="/store" linkLabel="Виж всички категории" />
-
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {shopCategories.map((item) => (
-            <div key={item.title} className="rounded-xl border border-slate-200 bg-slate-50 p-5 transition hover:border-sky-200 hover:bg-sky-50/50">
-              <div className="text-base font-semibold text-slate-900">{item.title}</div>
-              <p className="mt-3 text-sm leading-7 text-slate-600">{item.text}</p>
+              <h1 className="max-w-4xl text-5xl font-semibold leading-tight tracking-tight text-[#2f658e] sm:text-6xl lg:text-7xl">
+                Всичко за твоето пътуване.
+              </h1>
+              <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
+                Оборудвай кемпъра си или превърни буса си в дом на колела.
+                <br />
+                Наеми кемпър или избери от нашите модели за покупка. Всичко необходимо на едно място, за да тръгнеш уверено към следващото си приключение.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <Link href="/store" className="rounded-full bg-[#00A6F4] px-6 py-3.5 font-medium text-white shadow-xl shadow-[#00A6F4]/15 transition hover:bg-[#0298df]">
+                  Онлайн магазин
+                </Link>
+                <Link href="/rent" className="rounded-full border border-[#00A6F4] bg-white px-6 py-3.5 font-medium text-[#00A6F4] transition hover:bg-[#eef8ff]">
+                  Наеми кемпер
+                </Link>
+              </div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <SectionHeading eyebrow="Наеми" title="Актуални предложения под наем" href="/rent" linkLabel="Виж всички наеми" />
+            <div className="relative z-10">
+              <div className="rounded-[2rem] border border-[#dcecff] bg-white p-4 shadow-[0_16px_60px_rgba(43,87,128,0.12)]">
+                <div className="relative overflow-hidden rounded-[1.5rem] bg-[linear-gradient(180deg,#f9fcff_0%,#edf8ff_100%)] p-6">
+                  <img
+                    src="/beautiful-campsite-mountains-with-rv-wooden-bench.jpg"
+                    alt="Camper in nature"
+                    className="h-[280px] w-full rounded-[1.25rem] object-cover sm:h-[420px]"
+                  />
+                  <div className="absolute bottom-8 left-8 rounded-full border border-white/60 bg-white/85 px-4 py-2 text-sm font-medium text-[#2f658e] shadow-lg backdrop-blur-md">
+                    Всичко на едно място
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {rentals.length
-            ? rentals.map((product) => <ProductShowcaseCard key={product.id} product={product} kind="rent" />)
-            : [
-                <EmptyProductCard key="rent-empty-1" title="Няма активни предложения под наем" href="/rent" />,
-                <EmptyProductCard key="rent-empty-2" title="Няма активни предложения под наем" href="/rent" />,
-                <EmptyProductCard key="rent-empty-3" title="Няма активни предложения под наем" href="/rent" />,
-              ]}
-        </div>
-      </section>
+        <section className="border-y border-[#dcecff] bg-white">
+          <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-sm">
+                <p className="text-sm uppercase tracking-[0.2em] text-slate-400">Официален представител на</p>
+              </div>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <SectionHeading eyebrow="Покупка" title="Оферти за покупка" href="/buy" linkLabel="Виж всички оферти" />
+              <div className="flex w-full items-center gap-8 overflow-hidden">
+                <div className="partner-marquee relative w-full overflow-hidden">
+                  <div className="partner-marquee-track flex items-center gap-4 whitespace-nowrap pr-4">
+                    {[...partnerLogos, ...partnerLogos].map((logo, index) => (
+                      <div
+                        key={`${logo}-${index}`}
+                        className="flex h-14 items-center justify-center rounded-full border border-[#dcecff] bg-[#f9fcff] px-5 text-sm font-medium text-[#2f658e] opacity-70 transition hover:opacity-100"
+                      >
+                        {logo}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {campersForSale.length
-            ? campersForSale.map((product) => <ProductShowcaseCard key={product.id} product={product} kind="buy" />)
-            : [
-                <EmptyProductCard key="buy-empty-1" title="Няма активни оферти за покупка" href="/buy" />,
-                <EmptyProductCard key="buy-empty-2" title="Няма активни оферти за покупка" href="/buy" />,
-                <EmptyProductCard key="buy-empty-3" title="Няма активни оферти за покупка" href="/buy" />,
-              ]}
-        </div>
-      </section>
+        <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+          <div className="grid gap-6 lg:grid-cols-[1.25fr_0.85fr_0.85fr]">
+            <article className="group rounded-[2rem] border border-[#cfeaff] bg-[linear-gradient(180deg,#ffffff_0%,#f4fbff_100%)] p-8 shadow-[0_12px_40px_rgba(41,89,129,0.08)] transition hover:-translate-y-1">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e9f7ff] text-2xl">🛒</div>
+              <h3 className="text-3xl font-semibold text-[#2f658e]">Онлайн магазин за оборудване на кемпери и каравани</h3>
+              <p className="mt-4 max-w-xl leading-8 text-slate-600">
+                Открий оборудване за кемпери и каравани - аксесоари, системи и решения за комфорт и функционалност при всяко пътуване.
+              </p>
+              <Link href="/store" className="mt-8 inline-flex rounded-full bg-[#00A6F4] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#0298df]">
+                Разгледай онлайн магазина
+              </Link>
+            </article>
 
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="grid gap-0 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="border-b border-slate-200 bg-slate-50 p-6 lg:border-b-0 lg:border-r">
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">Направи си кемпер</div>
-            <h2 className="mt-2 text-2xl font-bold text-slate-900">От идея до готов проект</h2>
-            <p className="mt-4 text-sm leading-7 text-slate-600">
-              За хората, които не търсят само готов продукт, а искат да минат през целия процес по изграждане с правилното оборудване и ясно планиране.
+            <article className="group rounded-[2rem] border border-[#dcecff] bg-white p-8 transition hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(41,89,129,0.08)]">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eef8ff] text-2xl">🚐</div>
+              <h3 className="text-2xl font-semibold text-[#2f658e]">Наеми кемпер</h3>
+              <p className="mt-4 leading-7 text-slate-600">
+                Наеми сигурен и напълно оборудван кемпер за следващото си пътуване. Избери от актуални модели и направи запитване бързо.
+              </p>
+              <Link href="/rent" className="mt-8 inline-flex text-sm font-medium text-[#00A6F4] transition group-hover:translate-x-1">
+                Резервирай сега →
+              </Link>
+            </article>
+
+            <article className="group rounded-[2rem] border border-[#dcecff] bg-white p-8 transition hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(41,89,129,0.08)]">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eef8ff] text-2xl">🧰</div>
+              <h3 className="text-2xl font-semibold text-[#2f658e]">Купи кемпер или каравана</h3>
+              <p className="mt-4 leading-7 text-slate-600">Разгледай кемпери и каравани за продажба и избери най-подходящия за теб.</p>
+              <Link href="/buy" className="mt-8 inline-flex text-sm font-medium text-[#00A6F4] transition group-hover:translate-x-1">
+                Разгледай →
+              </Link>
+            </article>
+          </div>
+        </section>
+
+        <section id="build" className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+          <div className="grid gap-8 overflow-hidden rounded-[2rem] border border-[#dcecff] bg-[linear-gradient(180deg,#ffffff_0%,#f8fcff_100%)] p-8 shadow-[0_14px_50px_rgba(41,89,129,0.08)] lg:grid-cols-[0.92fr_1.08fr] lg:p-12">
+            <div>
+              <p className="text-sm uppercase tracking-[0.2em] text-[#00A6F4]">КАК ДА СИ НАПРАВИШ КЕМПЪР</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#2f658e] sm:text-4xl">Направи си кемпър</h2>
+              <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
+                Планирай и изгради своя кемпер с правилното оборудване. Предлагаме цялостно изграждане на кемпери - от проектиране и изолация до монтаж на електрически системи, вода, отопление и обзавеждане.
+              </p>
+              <p className="mt-6 max-w-xl text-base leading-7 text-slate-600">
+                С опит от над 50 реализирани проекта и доказан професионализъм ще създадем напълно оборудван и готов за път кемпер, съобразен с твоите нужди.
+              </p>
+              <Link href="/kak-da-si-napravim-kemper" className="mt-8 inline-flex rounded-full bg-[#f0a61c] px-6 py-3 font-medium text-white transition hover:bg-[#df9918]">
+                Научи повече
+              </Link>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              {steps.map((step, index) => (
+                <div key={step.title} className="rounded-[1.5rem] border border-[#e3f1ff] bg-white p-6">
+                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ecf8ff] text-lg font-semibold text-[#00A6F4]">
+                    {index + 1}
+                  </div>
+                  <h3 className="text-xl font-semibold text-[#2f658e]">{step.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{step.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="shop" className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+          <div className="grid gap-8 overflow-hidden rounded-[2rem] border border-[#dcecff] bg-white p-8 shadow-[0_14px_50px_rgba(41,89,129,0.08)] lg:grid-cols-[0.9fr_1.1fr] lg:p-12">
+            <div>
+              <p className="text-sm uppercase tracking-[0.2em] text-[#00A6F4]">ОБОРУДВАНЕ / ОНЛАЙН МАГАЗИН</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#2f658e] sm:text-4xl">Оборудване за кемпери и каравани</h2>
+              <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
+                Разгледай оборудване за кемпери и каравани - тенти, системи за вода, електричество, осветление и къмпинг аксесоари за комфорт и автономност за твоето пътуване.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <Link href="/store" className="rounded-full border border-[#cfeaff] bg-[#f3fbff] px-6 py-3 font-medium text-[#00A6F4] transition hover:bg-[#e9f7ff]">
+                  Виж всички категории
+                </Link>
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {shopCategories.map((item) => (
+                <div key={item.title} className="rounded-[1.5rem] border border-[#e3f1ff] bg-[linear-gradient(180deg,#ffffff_0%,#f8fcff_100%)] p-6">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ecf8ff] text-xl">{item.icon}</div>
+                  <h3 className="text-xl font-semibold text-[#2f658e]">{item.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{item.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="rent" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+          <div>
+            <p className="text-sm uppercase tracking-[0.2em] text-[#00A6F4]">НАЕМИ КЕМПЕР</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#2f658e] sm:text-4xl">Кемпери под наем</h2>
+            <p className="mt-4 max-w-3xl text-slate-600">
+              Кемпери под наем в България - разнообразие от модели, напълно оборудвани и готови за следващото ти пътуване.
             </p>
-            <Link className="mt-5 inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-800 transition hover:bg-white" href="/kak-da-si-napravim-kemper">
-              Научи повече
+          </div>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            {rentals.length ? (
+              rentals.map((product) => <RentCard key={product.id || product.slug || product.name} product={product} />)
+            ) : (
+              <>
+                <EmptyStateCard
+                  title="Очаквай нови предложения"
+                  text="Когато добавиш активни кемпери под наем, те ще се покажат тук автоматично."
+                  href="/rent"
+                  cta="Разгледай наемите"
+                />
+                <EmptyStateCard
+                  title="Актуални наличности"
+                  text="Поддържай наличностите в admin и началната страница ще показва най-новите активни предложения."
+                  href="/rent"
+                  cta="Към наемите"
+                />
+                <EmptyStateCard
+                  title="Запитване за наем"
+                  text="Дори без наличен модел в момента, посетителите могат да стигнат до секцията за наеми и да се свържат с вас."
+                  href="/rent"
+                  cta="Виж страницата"
+                />
+              </>
+            )}
+          </div>
+        </section>
+
+        <section id="buy" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.2em] text-[#00A6F4]">Купи кемпер</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#2f658e] sm:text-4xl">Купи кемпер или каравана</h2>
+            </div>
+            <Link href="/buy" className="w-fit rounded-full border border-[#cfeaff] bg-[#f3fbff] px-5 py-3 text-sm font-medium text-[#00A6F4] transition hover:bg-[#e9f7ff]">
+              Разгледай
             </Link>
           </div>
 
-          <div className="grid gap-4 p-6 sm:grid-cols-3">
-            {steps.map((step) => (
-              <div key={step.title} className="rounded-xl border border-slate-200 bg-white p-5">
-                <div className="text-sm font-semibold uppercase tracking-[0.16em] text-sky-700">{step.title}</div>
-                <p className="mt-3 text-sm leading-7 text-slate-600">{step.text}</p>
-              </div>
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            {campersForSale.length ? (
+              campersForSale.map((product) => <BuyCard key={product.id || product.slug || product.name} product={product} />)
+            ) : (
+              <>
+                <EmptyStateCard
+                  title="Кемпери за покупка"
+                  text="Добави активни оферти в секцията за продажба и те ще се покажат тук автоматично."
+                  href="/buy"
+                  cta="Към офертите"
+                />
+                <EmptyStateCard
+                  title="Нови предложения"
+                  text="Началната страница поддържа до три актуални предложения за покупка от каталога."
+                  href="/buy"
+                  cta="Разгледай"
+                />
+                <EmptyStateCard
+                  title="Каталог за продажба"
+                  text="Когато има активни модели, секцията ще се напълни със снимки, цени и линкове към детайлните страници."
+                  href="/buy"
+                  cta="Виж каталога"
+                />
+              </>
+            )}
+          </div>
+        </section>
+
+        <section id="reviews" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.2em] text-[#00A6F4]">Ревюта</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#2f658e] sm:text-4xl">Какво споделят нашите клиенти</h2>
+            </div>
+            <div className="text-sm text-slate-400">★ 4.9/5 средна оценка</div>
+          </div>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            {reviews.map((review) => (
+              <article key={review.name} className="rounded-[2rem] border border-[#dcecff] bg-white p-7 shadow-[0_10px_30px_rgba(41,89,129,0.06)]">
+                <div className="text-lg text-[#f0a61c]">★★★★★</div>
+                <p className="mt-5 leading-8 text-slate-600">“{review.text}”</p>
+                <div className="mt-6 text-sm font-medium text-[#2f658e]">{review.name}</div>
+              </article>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-6 pb-20 lg:px-8">
+          <div className="overflow-hidden rounded-[2rem] border border-[#dcecff] bg-[linear-gradient(180deg,#ffffff_0%,#eef9ff_100%)] p-8 shadow-[0_14px_50px_rgba(41,89,129,0.08)] lg:p-12">
+            <div className="max-w-3xl">
+              <p className="text-sm uppercase tracking-[0.2em] text-[#00A6F4]">Всичко необходимо за кемпер пътуване</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#2f658e] sm:text-5xl">Кемпери под наем, оборудване и решения на едно място</h2>
+              <p className="mt-4 max-w-2xl text-lg text-slate-600">
+                Избери кемпер под наем в България, оборудвай своя ван или започни собствен кемпер проект с нашите решения и продукти.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

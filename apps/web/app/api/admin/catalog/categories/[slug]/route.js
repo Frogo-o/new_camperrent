@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePublicCatalog } from "../../../../../lib/catalog-cache";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:4000";
 
@@ -26,6 +27,11 @@ export async function PATCH(req, { params }) {
     });
 
     const body = await res.text();
+
+    if (res.ok) {
+      revalidatePublicCatalog();
+    }
+
     return new NextResponse(body, {
       status: res.status,
       headers: { "content-type": res.headers.get("content-type") || "application/json; charset=utf-8" },

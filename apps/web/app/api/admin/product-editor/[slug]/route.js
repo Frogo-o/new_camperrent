@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { collectProductSlugs, parseJsonSafe, revalidatePublicCatalog } from "../../../../lib/catalog-cache";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:4000";
 
@@ -15,6 +16,11 @@ export async function GET(req, ctx) {
     });
 
     const body = await res.text();
+    const bodyJson = parseJsonSafe(body);
+
+    if (res.ok) {
+        revalidatePublicCatalog({ productSlugs: collectProductSlugs(slug, bodyJson) });
+    }
 
     return new NextResponse(body, {
         status: res.status,
