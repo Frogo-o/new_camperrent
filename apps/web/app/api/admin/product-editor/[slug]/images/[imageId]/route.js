@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { revalidatePublicCatalog } from "../../../../../../../lib/catalog-cache";
+import { revalidateProductDetail, revalidateProductListings } from "../../../../../../../lib/catalog-cache";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:4000";
 
@@ -29,7 +29,8 @@ export async function PATCH(req, ctx) {
   const body = await res.text();
 
   if (res.ok) {
-    revalidatePublicCatalog({ productSlugs: [slug] });
+    revalidateProductListings();
+    revalidateProductDetail([slug]);
   }
 
   return new NextResponse(body, {
@@ -54,7 +55,8 @@ export async function DELETE(req, ctx) {
   const body = await res.text();
 
   if (res.ok) {
-    revalidatePublicCatalog({ productSlugs: [slug] });
+    revalidateProductListings();
+    revalidateProductDetail([slug]);
   }
 
   return new NextResponse(body, {

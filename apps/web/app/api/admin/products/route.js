@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { collectProductSlugs, parseJsonSafe, revalidatePublicCatalog } from "../../../../lib/catalog-cache";
+import { collectProductSlugs, parseJsonSafe, revalidateProductDetail, revalidateProductListings } from "../../../../lib/catalog-cache";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:4000";
 
@@ -32,7 +32,9 @@ export async function POST(req) {
     const bodyJson = parseJsonSafe(bodyText);
 
     if (res.ok) {
-        revalidatePublicCatalog({ productSlugs: collectProductSlugs(bodyJson) });
+        const productSlugs = collectProductSlugs(bodyJson);
+        revalidateProductListings();
+        revalidateProductDetail(productSlugs);
     }
 
     const nextRes = new NextResponse(bodyText, {

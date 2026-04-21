@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { revalidatePublicCatalog } from "../../../../../../../lib/catalog-cache";
+import { revalidateProductDetail } from "../../../../../../../lib/catalog-cache";
 
 export const runtime = "nodejs";
 
@@ -35,7 +35,7 @@ export async function PATCH(req, ctx) {
   const body = await res.text();
 
   if (res.ok) {
-    revalidatePublicCatalog({ productSlugs: [slug] });
+    revalidateProductDetail([slug]);
   }
 
   return new NextResponse(body, {
@@ -63,7 +63,7 @@ export async function DELETE(req, ctx) {
   const body = await res.text();
 
   if (res.ok) {
-    revalidatePublicCatalog({ productSlugs: [slug] });
+    revalidateProductDetail([slug]);
   }
 
   return new NextResponse(body, {

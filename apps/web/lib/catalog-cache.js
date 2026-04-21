@@ -1,6 +1,7 @@
 import { revalidateTag } from "next/cache";
 
 export const CATALOG_PRODUCTS_TAG = "catalog:products";
+export const CATALOG_PRODUCT_DETAIL_TAG = "catalog:product-detail";
 export const CATALOG_BRANDS_TAG = "catalog:brands";
 export const CATALOG_CATEGORIES_TAG = "catalog:categories";
 
@@ -31,12 +32,27 @@ export function collectProductSlugs(...values) {
     .filter(Boolean);
 }
 
-export function revalidatePublicCatalog({ productSlugs = [] } = {}) {
-  revalidateTag(CATALOG_PRODUCTS_TAG);
-  revalidateTag(CATALOG_BRANDS_TAG);
-  revalidateTag(CATALOG_CATEGORIES_TAG);
-
+export function revalidateProductDetail(productSlugs = []) {
+  revalidateTag(CATALOG_PRODUCT_DETAIL_TAG);
   for (const slug of collectProductSlugs(productSlugs)) {
     revalidateTag(catalogProductTag(slug));
   }
+}
+
+export function revalidateProductListings() {
+  revalidateTag(CATALOG_PRODUCTS_TAG);
+}
+
+export function revalidateTaxonomy({ brands = false, categories = false, includeProducts = true, includeProductDetails = true } = {}) {
+  if (brands) revalidateTag(CATALOG_BRANDS_TAG);
+  if (categories) revalidateTag(CATALOG_CATEGORIES_TAG);
+  if (includeProducts) revalidateProductListings();
+  if (includeProductDetails) revalidateProductDetail();
+}
+
+export function revalidatePublicCatalog({ productSlugs = [], includeProducts = true, includeProductDetails = true, includeBrands = true, includeCategories = true } = {}) {
+  if (includeProducts) revalidateProductListings();
+  if (includeProductDetails) revalidateProductDetail(productSlugs);
+  if (includeBrands) revalidateTag(CATALOG_BRANDS_TAG);
+  if (includeCategories) revalidateTag(CATALOG_CATEGORIES_TAG);
 }
