@@ -235,8 +235,14 @@ export default async function CamperHomepage() {
                       <div
                         key={`${logo.src}-${index}`}
                         className="flex items-center justify-center transition"
+                        style={{ opacity: 1, filter: "none" }}
                       >
-                        <img src={logo.src} alt={logo.alt} className="h-12 w-auto object-contain" />
+                        <img
+                          src={logo.src}
+                          alt={logo.alt}
+                          className="h-12 w-auto object-contain"
+                          style={{ opacity: 1, filter: "none", mixBlendMode: "normal" }}
+                        />
                       </div>
                     ))}
                   </div>
