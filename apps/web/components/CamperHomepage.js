@@ -191,9 +191,9 @@ export default async function CamperHomepage() {
                 Всичко за твоето пътуване.
               </h1>
               <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
-                Оборудвай кемпъра си или превърни буса си в дом на колела.
+                Оборудвай кемпера си или превърни буса си в дом на колела.
                 <br />
-                Наеми кемпър или избери от нашите модели за покупка. Всичко необходимо на едно място, за да тръгнеш уверено към следващото си приключение.
+                Наеми кемпер или избери от нашите модели за покупка. Всичко необходимо на едно място, за да тръгнеш уверено към следващото си приключение.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <Link href="/store" className="rounded-full bg-[#00A6F4] px-6 py-3.5 font-medium text-white shadow-xl shadow-[#00A6F4]/15 transition hover:bg-[#0298df]">
@@ -285,8 +285,8 @@ export default async function CamperHomepage() {
         <section id="build" className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
           <div className="grid gap-8 overflow-hidden rounded-[2rem] border border-[#dcecff] bg-[linear-gradient(180deg,#ffffff_0%,#f8fcff_100%)] p-8 shadow-[0_14px_50px_rgba(41,89,129,0.08)] lg:grid-cols-[0.92fr_1.08fr] lg:p-12">
             <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-[#00A6F4]">КАК ДА СИ НАПРАВИШ КЕМПЪР</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#2f658e] sm:text-4xl">Направи си кемпър</h2>
+              <p className="text-sm uppercase tracking-[0.2em] text-[#00A6F4]">КАК ДА СИ НАПРАВИШ КЕМПЕР</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#2f658e] sm:text-4xl">Направи си кемпер</h2>
               <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
                 Планирай и изгради своя кемпер с правилното оборудване. Предлагаме цялостно изграждане на кемпери - от проектиране и изолация до монтаж на електрически системи, вода, отопление и обзавеждане.
               </p>
