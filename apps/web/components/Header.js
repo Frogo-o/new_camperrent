@@ -27,10 +27,10 @@ const navItems = [
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-[#dcecff] bg-white/90 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 lg:px-8">
-        <div className="flex items-center gap-8 lg:gap-10">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4 lg:px-8">
+        <div className="flex min-w-0 items-center gap-4 sm:gap-6 lg:gap-10">
           <Link href="/" className="flex items-center gap-3 text-[#2f658e]">
-            <img src="/camperLogo.png" alt="Camper Rent" className="h-12 w-auto object-contain sm:h-14" />
+            <img src="/camperLogo.png" alt="Camper Rent" className="h-10 w-auto object-contain sm:h-12 lg:h-14" />
           </Link>
 
           <nav className="hidden items-center gap-7 text-sm font-medium text-slate-700 lg:flex">
@@ -42,11 +42,11 @@ export default function Header() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <Link
             href="/store"
             aria-label="Търсене"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#dcecff] bg-white text-slate-600 transition hover:border-[#00A6F4] hover:text-[#00A6F4]"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#dcecff] bg-white text-slate-600 transition hover:border-[#00A6F4] hover:text-[#00A6F4] sm:h-10 sm:w-10"
           >
             <SearchIcon />
           </Link>
@@ -56,7 +56,7 @@ export default function Header() {
           <Link
             href="/cart"
             aria-label="Количка"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#dcecff] bg-white text-slate-600 transition hover:border-[#00A6F4] hover:text-[#00A6F4]"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#dcecff] bg-white text-slate-600 transition hover:border-[#00A6F4] hover:text-[#00A6F4] sm:h-10 sm:w-10"
           >
             <CartIcon />
           </Link>
