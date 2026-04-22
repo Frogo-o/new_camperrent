@@ -16,7 +16,15 @@ export default function TopNav() {
 
   return (
     <nav className="border-b border-[#dcecff] bg-white/95 lg:hidden" aria-label="Основна навигация">
-      <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 sm:px-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6">
+        <a
+          href="tel:+359886316112"
+          className="mb-3 inline-flex items-center rounded-full border border-[#dcecff] bg-[#f8fbff] px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-[#00A6F4] hover:text-[#00A6F4]"
+        >
+          +359 886 316 112
+        </a>
+
+        <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {navItems.map((item) => {
           const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
 
@@ -34,6 +42,7 @@ export default function TopNav() {
             </Link>
           );
         })}
+        </div>
       </div>
     </nav>
   );
