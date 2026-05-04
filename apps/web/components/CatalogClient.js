@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { PriceEURWithBGN } from "@/components/Price";
 
 function normalizeList(x) {
@@ -111,6 +111,8 @@ function CategoryTopBar({ categories, categorySlug, setCategorySlug, setPage }) 
 }
 
 export default function CatalogClient() {
+  const searchInputRef = useRef(null);
+
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
 
@@ -127,6 +129,37 @@ export default function CatalogClient() {
   const [meta, setMeta] = useState({ page: 1, limit, total: 0, totalPages: 1 });
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
+
+  useEffect(() => {
+    function focusSearchInput() {
+      const timer = window.setTimeout(() => {
+        searchInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        searchInputRef.current?.focus({ preventScroll: true });
+      }, 100);
+
+      return timer;
+    }
+
+    let timer = null;
+
+    if (sessionStorage.getItem("catalogFocusSearch") === "true") {
+      sessionStorage.removeItem("catalogFocusSearch");
+      timer = focusSearchInput();
+    }
+
+    function handleFocusSearch() {
+      sessionStorage.removeItem("catalogFocusSearch");
+      if (timer) window.clearTimeout(timer);
+      timer = focusSearchInput();
+    }
+
+    window.addEventListener("catalog:focus-search", handleFocusSearch);
+
+    return () => {
+      if (timer) window.clearTimeout(timer);
+      window.removeEventListener("catalog:focus-search", handleFocusSearch);
+    };
+  }, []);
 
   useEffect(() => {
     const pendingCategory = sessionStorage.getItem("catalogCategorySlug");
@@ -239,6 +272,7 @@ export default function CatalogClient() {
         <main>
           <div className="mb-4 grid gap-3 md:grid-cols-2 xl:grid-cols-[1fr_220px]">
             <input
+              ref={searchInputRef}
               value={q}
               onChange={(e) => {
                 setPage(1);

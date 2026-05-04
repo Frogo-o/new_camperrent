@@ -30,6 +30,11 @@ const navItems = [
 export default function Header() {
   const pathname = usePathname();
 
+  function handleSearchClick() {
+    sessionStorage.setItem("catalogFocusSearch", "true");
+    window.dispatchEvent(new Event("catalog:focus-search"));
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-[#dcecff] bg-white/90 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4 lg:px-8">
@@ -64,6 +69,7 @@ export default function Header() {
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <Link
             href="/store"
+            onClick={handleSearchClick}
             aria-label="Търсене"
             className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#dcecff] bg-white text-slate-600 transition hover:border-[#00A6F4] hover:text-[#00A6F4] sm:h-10 sm:w-10"
           >
