@@ -8,6 +8,7 @@ const LIMITS = {
 };
 
 const EXCLUDED_BY_DEFAULT = ["camper-rent", "buy-camper"];
+const WINDOW_PRIORITY_CATEGORY_SLUG = "prozorci";
 
 const MISSING_ARTICLE_NUMBER_TEXT = "липсва артикулен номер";
 
@@ -54,6 +55,28 @@ function parseSeatsStrict(v) {
   if (!Number.isInteger(n)) return NaN;
   if (n < 1 || n > 12) return NaN;
   return n;
+}
+
+function hasSeriesToken(name, token) {
+  const pattern = new RegExp(`(^|[^0-9A-Za-zА-Яа-я])${token}([^0-9A-Za-zА-Яа-я]|$)`, "i");
+  return pattern.test(String(name || ""));
+}
+
+function getWindowSeriesPriority(product) {
+  const name = String(product?.name || "");
+
+  if (name.toLowerCase().includes("karbest")) return 0;
+  if (hasSeriesToken(name, "ТМ")) return 1;
+  if (hasSeriesToken(name, "АМ")) return 2;
+
+  return 3;
+}
+
+function sortWindowPriorityProducts(products) {
+  return products
+    .map((product, index) => ({ product, index, priority: getWindowSeriesPriority(product) }))
+    .sort((a, b) => a.priority - b.priority || a.index - b.index)
+    .map((x) => x.product);
 }
 
 function parseProductsQueryStrict(query) {
@@ -135,7 +158,7 @@ function parseProductsQueryStrict(query) {
 
   const skip = (page - 1) * limit;
 
-  return { page, limit, skip, where, orderBy };
+  return { page, limit, skip, where, orderBy, categorySlug };
 }
 
 function withArticleNumberFallback(p) {
@@ -169,15 +192,15 @@ async function getBrands() {
 }
 
 async function listProducts(rawQuery) {
-  const { page, limit, skip, where, orderBy } = parseProductsQueryStrict(rawQuery);
+  const { page, limit, skip, where, orderBy, categorySlug } = parseProductsQueryStrict(rawQuery);
+  const shouldPrioritizeWindows = categorySlug === WINDOW_PRIORITY_CATEGORY_SLUG;
 
-  const [total, products] = await Promise.all([
+  const [total, productsRaw] = await Promise.all([
     prisma.product.count({ where }),
     prisma.product.findMany({
       where,
       orderBy,
-      skip,
-      take: limit,
+      ...(shouldPrioritizeWindows ? {} : { skip, take: limit }),
       select: {
         id: true,
         name: true,
@@ -210,6 +233,10 @@ async function listProducts(rawQuery) {
       },
     }),
   ]);
+
+  const products = shouldPrioritizeWindows
+    ? sortWindowPriorityProducts(productsRaw).slice(skip, skip + limit)
+    : productsRaw;
 
   return {
     data: mapProductsWithArticleNumberFallback(products),
