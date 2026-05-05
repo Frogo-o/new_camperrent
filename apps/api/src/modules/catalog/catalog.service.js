@@ -9,6 +9,22 @@ const LIMITS = {
 
 const EXCLUDED_BY_DEFAULT = ["camper-rent", "buy-camper"];
 const WINDOW_PRIORITY_CATEGORY_SLUG = "prozorci";
+const FEATURED_ARTICLE_NUMBERS = [
+  "K124",
+  "30112AT",
+  "30235AJ",
+  "30357AB",
+  "30761CX",
+  "30700AK",
+  "97310-022",
+  "30311AK",
+  "30771AA",
+  "20565AK",
+  "30217AK",
+  "30003ED",
+  "202240",
+];
+const FEATURED_ARTICLE_PRIORITY = new Map(FEATURED_ARTICLE_NUMBERS.map((article, index) => [article, index]));
 
 const MISSING_ARTICLE_NUMBER_TEXT = "липсва артикулен номер";
 
@@ -57,6 +73,28 @@ function parseSeatsStrict(v) {
   return n;
 }
 
+function normalizeArticleNumber(v) {
+  return String(v || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[А]/g, "A")
+    .replace(/[В]/g, "B")
+    .replace(/[Е]/g, "E")
+    .replace(/[К]/g, "K")
+    .replace(/[М]/g, "M")
+    .replace(/[Н]/g, "H")
+    .replace(/[О]/g, "O")
+    .replace(/[Р]/g, "P")
+    .replace(/[С]/g, "C")
+    .replace(/[Т]/g, "T")
+    .replace(/[Х]/g, "X");
+}
+
+function getFeaturedArticlePriority(product) {
+  const articleNumber = normalizeArticleNumber(product?.articleNumber);
+  return FEATURED_ARTICLE_PRIORITY.has(articleNumber) ? FEATURED_ARTICLE_PRIORITY.get(articleNumber) : Infinity;
+}
+
 function hasSeriesToken(name, token) {
   const pattern = new RegExp(`(^|[^0-9A-Za-zА-Яа-я])${token}([^0-9A-Za-zА-Яа-я]|$)`, "i");
   return pattern.test(String(name || ""));
@@ -72,10 +110,20 @@ function getWindowSeriesPriority(product) {
   return 3;
 }
 
-function sortWindowPriorityProducts(products) {
+function sortPriorityProducts(products, shouldPrioritizeWindows) {
   return products
-    .map((product, index) => ({ product, index, priority: getWindowSeriesPriority(product) }))
-    .sort((a, b) => a.priority - b.priority || a.index - b.index)
+    .map((product, index) => ({
+      product,
+      index,
+      articlePriority: getFeaturedArticlePriority(product),
+      windowPriority: shouldPrioritizeWindows ? getWindowSeriesPriority(product) : 3,
+    }))
+    .sort(
+      (a, b) =>
+        a.articlePriority - b.articlePriority ||
+        a.windowPriority - b.windowPriority ||
+        a.index - b.index
+    )
     .map((x) => x.product);
 }
 
@@ -193,14 +241,15 @@ async function getBrands() {
 
 async function listProducts(rawQuery) {
   const { page, limit, skip, where, orderBy, categorySlug } = parseProductsQueryStrict(rawQuery);
-  const shouldPrioritizeWindows = categorySlug === WINDOW_PRIORITY_CATEGORY_SLUG;
+  const shouldPrioritizeWindows = !categorySlug || categorySlug === WINDOW_PRIORITY_CATEGORY_SLUG;
+  const shouldPrioritizeProducts = true;
 
   const [total, productsRaw] = await Promise.all([
     prisma.product.count({ where }),
     prisma.product.findMany({
       where,
       orderBy,
-      ...(shouldPrioritizeWindows ? {} : { skip, take: limit }),
+      ...(shouldPrioritizeProducts ? {} : { skip, take: limit }),
       select: {
         id: true,
         name: true,
@@ -234,8 +283,8 @@ async function listProducts(rawQuery) {
     }),
   ]);
 
-  const products = shouldPrioritizeWindows
-    ? sortWindowPriorityProducts(productsRaw).slice(skip, skip + limit)
+  const products = shouldPrioritizeProducts
+    ? sortPriorityProducts(productsRaw, shouldPrioritizeWindows).slice(skip, skip + limit)
     : productsRaw;
 
   return {
