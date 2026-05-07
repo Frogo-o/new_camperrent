@@ -29,6 +29,11 @@ const navItems = [
 
 export default function Header() {
   const pathname = usePathname();
+  const searchHref = pathname?.startsWith("/rent")
+    ? "/rent"
+    : pathname?.startsWith("/buy")
+    ? "/buy"
+    : "/store";
 
   function handleSearchClick() {
     sessionStorage.setItem("catalogFocusSearch", "true");
@@ -68,7 +73,7 @@ export default function Header() {
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <Link
-            href="/store"
+            href={searchHref}
             onClick={handleSearchClick}
             aria-label="Търсене"
             className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#dcecff] bg-white text-slate-600 transition hover:border-[#00A6F4] hover:text-[#00A6F4] sm:h-10 sm:w-10"

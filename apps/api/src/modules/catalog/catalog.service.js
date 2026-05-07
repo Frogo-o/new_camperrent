@@ -95,6 +95,11 @@ function getFeaturedArticlePriority(product) {
   return FEATURED_ARTICLE_PRIORITY.has(articleNumber) ? FEATURED_ARTICLE_PRIORITY.get(articleNumber) : Infinity;
 }
 
+function getWindowCategoryPriority(product, shouldPrioritizeWindows) {
+  if (!shouldPrioritizeWindows) return 1;
+  return product?.category?.slug === WINDOW_PRIORITY_CATEGORY_SLUG ? 0 : 1;
+}
+
 function hasSeriesToken(name, token) {
   const pattern = new RegExp(`(^|[^0-9A-Za-zА-Яа-я])${token}([^0-9A-Za-zА-Яа-я]|$)`, "i");
   return pattern.test(String(name || ""));
@@ -116,12 +121,14 @@ function sortPriorityProducts(products, shouldPrioritizeWindows) {
       product,
       index,
       articlePriority: getFeaturedArticlePriority(product),
+      windowCategoryPriority: getWindowCategoryPriority(product, shouldPrioritizeWindows),
       windowPriority: shouldPrioritizeWindows ? getWindowSeriesPriority(product) : 3,
     }))
     .sort(
       (a, b) =>
-        a.articlePriority - b.articlePriority ||
+        a.windowCategoryPriority - b.windowCategoryPriority ||
         a.windowPriority - b.windowPriority ||
+        a.articlePriority - b.articlePriority ||
         a.index - b.index
     )
     .map((x) => x.product);

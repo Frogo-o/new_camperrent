@@ -129,12 +129,15 @@ export default function CatalogClient() {
   const [meta, setMeta] = useState({ page: 1, limit, total: 0, totalPages: 1 });
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
+  const [highlightSearch, setHighlightSearch] = useState(false);
 
   useEffect(() => {
     function focusSearchInput() {
       const timer = window.setTimeout(() => {
         searchInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
         searchInputRef.current?.focus({ preventScroll: true });
+        setHighlightSearch(true);
+        window.setTimeout(() => setHighlightSearch(false), 1600);
       }, 100);
 
       return timer;
@@ -279,7 +282,13 @@ export default function CatalogClient() {
                 setQ(e.target.value);
               }}
               placeholder="Търсене (име или арт. номер)..."
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 shadow-sm outline-none focus:border-sky-400"
+              className={[
+                "w-full rounded-lg border px-3 py-2 shadow-sm outline-none transition",
+                "focus:border-sky-500 focus:bg-sky-50 focus:ring-4 focus:ring-sky-100",
+                highlightSearch
+                  ? "border-sky-500 bg-sky-50 ring-4 ring-sky-100"
+                  : "border-slate-200 bg-white",
+              ].join(" ")}
             />
 
             <select
