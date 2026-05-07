@@ -95,9 +95,11 @@ function getFeaturedArticlePriority(product) {
   return FEATURED_ARTICLE_PRIORITY.has(articleNumber) ? FEATURED_ARTICLE_PRIORITY.get(articleNumber) : Infinity;
 }
 
-function getWindowCategoryPriority(product, shouldPrioritizeWindows) {
+function getWindowProductPriority(product, shouldPrioritizeWindows) {
   if (!shouldPrioritizeWindows) return 1;
-  return product?.category?.slug === WINDOW_PRIORITY_CATEGORY_SLUG ? 0 : 1;
+  if (product?.category?.slug !== WINDOW_PRIORITY_CATEGORY_SLUG) return 1;
+
+  return getWindowSeriesPriority(product) < 3 ? 0 : 1;
 }
 
 function hasSeriesToken(name, token) {
@@ -121,12 +123,12 @@ function sortPriorityProducts(products, shouldPrioritizeWindows) {
       product,
       index,
       articlePriority: getFeaturedArticlePriority(product),
-      windowCategoryPriority: getWindowCategoryPriority(product, shouldPrioritizeWindows),
+      windowProductPriority: getWindowProductPriority(product, shouldPrioritizeWindows),
       windowPriority: shouldPrioritizeWindows ? getWindowSeriesPriority(product) : 3,
     }))
     .sort(
       (a, b) =>
-        a.windowCategoryPriority - b.windowCategoryPriority ||
+        a.windowProductPriority - b.windowProductPriority ||
         a.windowPriority - b.windowPriority ||
         a.articlePriority - b.articlePriority ||
         a.index - b.index
