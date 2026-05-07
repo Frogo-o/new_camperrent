@@ -8,8 +8,9 @@ const LIMITS = {
 };
 
 const EXCLUDED_BY_DEFAULT = ["camper-rent", "buy-camper"];
-const WINDOW_PRIORITY_CATEGORY_SLUG = "prozorci";
 const FEATURED_ARTICLE_NUMBERS = [
+  "P1011",
+  "P1193",
   "K124",
   "30112AT",
   "30235AJ",
@@ -84,6 +85,7 @@ function normalizeArticleNumber(v) {
     .replace(/[М]/g, "M")
     .replace(/[Н]/g, "H")
     .replace(/[О]/g, "O")
+    .replace(/[П]/g, "P")
     .replace(/[Р]/g, "P")
     .replace(/[С]/g, "C")
     .replace(/[Т]/g, "T")
@@ -95,41 +97,15 @@ function getFeaturedArticlePriority(product) {
   return FEATURED_ARTICLE_PRIORITY.has(articleNumber) ? FEATURED_ARTICLE_PRIORITY.get(articleNumber) : Infinity;
 }
 
-function getWindowProductPriority(product, shouldPrioritizeWindows) {
-  if (!shouldPrioritizeWindows) return 1;
-  if (product?.category?.slug !== WINDOW_PRIORITY_CATEGORY_SLUG) return 1;
-
-  return getWindowSeriesPriority(product) < 3 ? 0 : 1;
-}
-
-function hasSeriesToken(name, token) {
-  const pattern = new RegExp(`(^|[^0-9A-Za-zА-Яа-я])${token}([^0-9A-Za-zА-Яа-я]|$)`, "i");
-  return pattern.test(String(name || ""));
-}
-
-function getWindowSeriesPriority(product) {
-  const name = String(product?.name || "");
-
-  if (name.toLowerCase().includes("karbest")) return 0;
-  if (hasSeriesToken(name, "ТМ")) return 1;
-  if (hasSeriesToken(name, "АМ")) return 2;
-
-  return 3;
-}
-
-function sortPriorityProducts(products, shouldPrioritizeWindows) {
+function sortPriorityProducts(products) {
   return products
     .map((product, index) => ({
       product,
       index,
       articlePriority: getFeaturedArticlePriority(product),
-      windowProductPriority: getWindowProductPriority(product, shouldPrioritizeWindows),
-      windowPriority: shouldPrioritizeWindows ? getWindowSeriesPriority(product) : 3,
     }))
     .sort(
       (a, b) =>
-        a.windowProductPriority - b.windowProductPriority ||
-        a.windowPriority - b.windowPriority ||
         a.articlePriority - b.articlePriority ||
         a.index - b.index
     )
@@ -249,8 +225,7 @@ async function getBrands() {
 }
 
 async function listProducts(rawQuery) {
-  const { page, limit, skip, where, orderBy, categorySlug } = parseProductsQueryStrict(rawQuery);
-  const shouldPrioritizeWindows = !categorySlug || categorySlug === WINDOW_PRIORITY_CATEGORY_SLUG;
+  const { page, limit, skip, where, orderBy } = parseProductsQueryStrict(rawQuery);
   const shouldPrioritizeProducts = true;
 
   const [total, productsRaw] = await Promise.all([
@@ -293,7 +268,7 @@ async function listProducts(rawQuery) {
   ]);
 
   const products = shouldPrioritizeProducts
-    ? sortPriorityProducts(productsRaw, shouldPrioritizeWindows).slice(skip, skip + limit)
+    ? sortPriorityProducts(productsRaw).slice(skip, skip + limit)
     : productsRaw;
 
   return {
