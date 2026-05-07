@@ -9,8 +9,8 @@ const LIMITS = {
 
 const EXCLUDED_BY_DEFAULT = ["camper-rent", "buy-camper"];
 const FEATURED_ARTICLE_NUMBERS = [
-  "P1011",
-  "P1193",
+  "P011",
+  "P193",
   "K124",
   "30112AT",
   "30235AJ",
