@@ -25,7 +25,6 @@ const FEATURED_ARTICLE_NUMBERS = [
   "30003ED",
   "202240",
 ];
-const FEATURED_ARTICLE_PRIORITY = new Map(FEATURED_ARTICLE_NUMBERS.map((article, index) => [article, index]));
 
 const MISSING_ARTICLE_NUMBER_TEXT = "липсва артикулен номер";
 
@@ -74,23 +73,62 @@ function parseSeatsStrict(v) {
   return n;
 }
 
+function normalizeArticleLetter(ch) {
+  const code = ch.charCodeAt(0);
+
+  switch (code) {
+    case 0x0410:
+    case 0x0430:
+      return "A";
+    case 0x0412:
+    case 0x0432:
+      return "B";
+    case 0x0415:
+    case 0x0435:
+      return "E";
+    case 0x041A:
+    case 0x043A:
+      return "K";
+    case 0x041C:
+    case 0x043C:
+      return "M";
+    case 0x041D:
+    case 0x043D:
+      return "H";
+    case 0x041E:
+    case 0x043E:
+      return "O";
+    case 0x041F:
+    case 0x043F:
+    case 0x0420:
+    case 0x0440:
+      return "P";
+    case 0x0421:
+    case 0x0441:
+      return "C";
+    case 0x0422:
+    case 0x0442:
+      return "T";
+    case 0x0425:
+    case 0x0445:
+      return "X";
+    default:
+      return ch.toUpperCase();
+  }
+}
+
 function normalizeArticleNumber(v) {
   return String(v || "")
     .trim()
-    .toUpperCase()
-    .replace(/[А]/g, "A")
-    .replace(/[В]/g, "B")
-    .replace(/[Е]/g, "E")
-    .replace(/[К]/g, "K")
-    .replace(/[М]/g, "M")
-    .replace(/[Н]/g, "H")
-    .replace(/[О]/g, "O")
-    .replace(/[П]/g, "P")
-    .replace(/[Р]/g, "P")
-    .replace(/[С]/g, "C")
-    .replace(/[Т]/g, "T")
-    .replace(/[Х]/g, "X");
+    .replace(/\s+/g, "")
+    .split("")
+    .map(normalizeArticleLetter)
+    .join("");
 }
+
+const FEATURED_ARTICLE_PRIORITY = new Map(
+  FEATURED_ARTICLE_NUMBERS.map((article, index) => [normalizeArticleNumber(article), index])
+);
 
 function getFeaturedArticlePriority(product) {
   const articleNumber = normalizeArticleNumber(product?.articleNumber);
