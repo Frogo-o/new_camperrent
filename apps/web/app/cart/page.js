@@ -368,7 +368,7 @@ export default function Page() {
                                 </div>
 
                                 <div>
-                                    <label className="mb-1 block text-xs text-slate-600">Адрес</label>
+                                    <label className="mb-1 block text-xs text-slate-600">Адрес и град</label>
                                     <input
                                         value={form.address}
                                         onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}

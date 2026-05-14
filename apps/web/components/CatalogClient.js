@@ -284,9 +284,9 @@ export default function CatalogClient() {
               placeholder="Търсене (име или арт. номер)..."
               className={[
                 "w-full rounded-lg border px-3 py-2 shadow-sm outline-none transition",
-                "focus:border-sky-500 focus:bg-sky-50 focus:ring-4 focus:ring-sky-100",
+                "focus:border-amber-500 focus:bg-amber-50 focus:ring-4 focus:ring-amber-200",
                 highlightSearch
-                  ? "border-sky-500 bg-sky-50 ring-4 ring-sky-100"
+                  ? "border-amber-500 bg-amber-50 ring-4 ring-amber-200 shadow-lg shadow-amber-200/70"
                   : "border-slate-200 bg-white",
               ].join(" ")}
             />
