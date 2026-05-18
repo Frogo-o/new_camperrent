@@ -84,6 +84,7 @@ export default function EditProductClient() {
   const [infoUploading, setInfoUploading] = useState(false);
   const [infoLinking, setInfoLinking] = useState(false);
   const [infoDeletingId, setInfoDeletingId] = useState(null);
+  const [infoSavingId, setInfoSavingId] = useState(null);
   const [newInfoUrl, setNewInfoUrl] = useState("");
 
   useEffect(() => {
@@ -452,7 +453,7 @@ export default function EditProductClient() {
             url,
             sortOrder: infoFiles.length,
             filename: dto?.filename || "",
-            originalName: dto?.originalname || "",
+            originalname: dto?.originalname || file.name || "",
             mimetype: dto?.mimetype || "",
             size: dto?.size || 0,
           }),
@@ -527,6 +528,36 @@ export default function EditProductClient() {
       toast.error(e?.message || "Грешка");
     } finally {
       setInfoLinking(false);
+    }
+  }
+
+  async function saveInfoFileName(infoId, originalName) {
+    setInfoSavingId(infoId);
+    try {
+      const res = await fetch(
+        `/api/admin/product-editor/${encodeURIComponent(currentSlug)}/info-files/${encodeURIComponent(String(infoId))}`,
+        {
+          method: "PATCH",
+          headers: { "content-type": "application/json; charset=utf-8" },
+          body: JSON.stringify({ originalname: String(originalName || "").trim() || null }),
+          cache: "no-store",
+        }
+      );
+
+      const json = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(json?.message || "Грешка при запазване на име на файл");
+
+      const updated = json?.data;
+      setInfoFiles((prev) =>
+        prev.map((x) =>
+          x.id === infoId ? { ...x, originalName: String(updated?.originalName || updated?.originalname || originalName || "") } : x
+        )
+      );
+      toast.success("Името на файла е запазено");
+    } catch (e) {
+      toast.error(e?.message || "Грешка");
+    } finally {
+      setInfoSavingId(null);
     }
   }
 
@@ -866,8 +897,10 @@ export default function EditProductClient() {
                       total={infoFiles.length}
                       disabled={disabled}
                       isBusy={infoDeletingId === f.id}
+                      isSaving={infoSavingId === f.id}
                       onMoveUp={() => moveInfoUp(idx)}
                       onMoveDown={() => moveInfoDown(idx)}
+                      onSaveName={(nextName) => saveInfoFileName(f.id, nextName)}
                       onDelete={() => deleteInfoFile(f.id)}
                     />
                   ))}
@@ -968,7 +1001,15 @@ function ImageRow({ img, idx, total, disabled, isBusy, onMoveUp, onMoveDown, onS
   );
 }
 
-function InfoFileRow({ file, idx, total, disabled, isBusy, onMoveUp, onMoveDown, onDelete }) {
+function InfoFileRow({ file, idx, total, disabled, isBusy, isSaving, onMoveUp, onMoveDown, onSaveName, onDelete }) {
+  const [name, setName] = useState(file.originalName || "");
+
+  useEffect(() => {
+    setName(file.originalName || "");
+  }, [file.originalName]);
+
+  const nameDirty = name.trim() !== String(file.originalName || "").trim();
+
   return (
     <div className="rounded-xl border border-slate-200 p-3">
       <div className="grid gap-2">
@@ -978,6 +1019,23 @@ function InfoFileRow({ file, idx, total, disabled, isBusy, onMoveUp, onMoveDown,
 
         <div className="min-w-0">
           <div className="truncate text-sm font-semibold text-slate-900">{file.originalName || file.filename || "Файл"}</div>
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Име на файла"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-300 focus:ring-4 focus:ring-slate-100"
+              disabled={disabled || isBusy || isSaving}
+            />
+            <button
+              type="button"
+              onClick={() => onSaveName(name)}
+              disabled={disabled || isBusy || isSaving || !nameDirty}
+              className="rounded-lg bg-sky-600 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 disabled:bg-slate-400"
+            >
+              {isSaving ? "Запазване..." : "Запази име"}
+            </button>
+          </div>
           <div className="mt-0.5 break-all text-xs text-slate-500">{file.url}</div>
           <div className="mt-1 text-[11px] text-slate-500">
             {file.mimetype ? ` ${file.mimetype}` : ""}

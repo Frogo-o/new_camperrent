@@ -215,6 +215,10 @@ export default function CreateProductClient() {
     setInfoFiles(normalizeSortOrders(next));
   }
 
+  function updateInfoFileName(idx, originalName) {
+    setInfoFiles((prev) => prev.map((x, i) => (i === idx ? { ...x, originalName } : x)));
+  }
+
   async function createProduct() {
     if (!name.trim()) return toast.error("Името е задължително");
     if (!slug.trim()) return toast.error("Slug е задължителен");
@@ -244,7 +248,7 @@ export default function CreateProductClient() {
           url: x.url,
           sortOrder: x.sortOrder,
           filename: x.filename || undefined,
-          originalName: x.originalName || undefined,
+          originalname: x.originalName || undefined,
           size: Number.isFinite(Number(x.size)) ? Number(x.size) : undefined,
           mimetype: x.mimetype || undefined,
         }));
@@ -478,6 +482,13 @@ export default function CreateProductClient() {
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="min-w-0">
                       <div className="truncate text-sm font-semibold text-slate-900">{f.originalName || "Файл"}</div>
+                      <input
+                        value={f.originalName || ""}
+                        onChange={(e) => updateInfoFileName(idx, e.target.value)}
+                        placeholder="Име на файла"
+                        className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-300 focus:ring-4 focus:ring-slate-100"
+                        disabled={creating || uploading || uploadingInfoFiles}
+                      />
                       <div className="mt-0.5 break-all text-xs text-slate-500">{f.url}</div>
                       <div className="mt-1 text-[11px] text-slate-500">
                         sortOrder: {f.sortOrder}

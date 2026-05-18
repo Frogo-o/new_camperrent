@@ -12,6 +12,21 @@ function trimmedOrUndefined(v) {
   return s ? s : undefined;
 }
 
+function pickOriginalName(raw) {
+  return trimmedOrUndefined(raw?.originalname) ?? trimmedOrUndefined(raw?.originalName);
+}
+
+function filenameFromUrl(url) {
+  try {
+    const pathname = new URL(url).pathname;
+    const name = decodeURIComponent(pathname.split("/").filter(Boolean).pop() || "");
+    return trimmedOrUndefined(name);
+  } catch {
+    const name = String(url || "").split("?")[0].split("#")[0].split("/").filter(Boolean).pop();
+    return trimmedOrUndefined(name);
+  }
+}
+
 async function getEditableBySlug(slug) {
   const product = await prisma.product.findUnique({
     where: { slug },
@@ -255,8 +270,8 @@ async function addInfoFileBySlug(slug, raw) {
   const url = String(raw?.url || "").trim();
   if (!url) throw badRequest(["url is required"]);
 
-  const filename = trimmedOrUndefined(raw?.filename);
-  const originalname = trimmedOrUndefined(raw?.originalname);
+  const filename = trimmedOrUndefined(raw?.filename) ?? filenameFromUrl(url);
+  const originalname = pickOriginalName(raw);
   const mimetype = trimmedOrUndefined(raw?.mimetype);
 
   const sizeRaw = raw?.size;
@@ -269,7 +284,7 @@ async function addInfoFileBySlug(slug, raw) {
     data: {
       productId,
       url,
-      filename: filename ?? null,
+      filename: filename ?? `info-file-${Date.now()}`,
       originalname: originalname ?? null,
       mimetype: mimetype ?? null,
       size: size ?? null,
@@ -312,7 +327,7 @@ async function patchInfoFileBySlug(slug, fileIdRaw, raw) {
   }
 
   if (raw?.filename !== undefined) data.filename = trimmedOrUndefined(raw.filename) ?? null;
-  if (raw?.originalname !== undefined) data.originalname = trimmedOrUndefined(raw.originalname) ?? null;
+  if (raw?.originalname !== undefined || raw?.originalName !== undefined) data.originalname = pickOriginalName(raw) ?? null;
   if (raw?.mimetype !== undefined) data.mimetype = trimmedOrUndefined(raw.mimetype) ?? null;
 
   if (raw?.size !== undefined) {

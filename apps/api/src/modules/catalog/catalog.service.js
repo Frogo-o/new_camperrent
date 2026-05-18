@@ -236,6 +236,12 @@ function withArticleNumberFallback(p) {
   return {
     ...p,
     articleNumber: p.articleNumber ?? MISSING_ARTICLE_NUMBER_TEXT,
+    infoFiles: Array.isArray(p.infoFiles)
+      ? p.infoFiles.map((file) => ({
+          ...file,
+          originalName: file.originalname,
+        }))
+      : p.infoFiles,
   };
 }
 

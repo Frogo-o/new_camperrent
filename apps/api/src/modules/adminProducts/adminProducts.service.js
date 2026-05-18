@@ -58,6 +58,25 @@ function trimOrNull(v) {
   return s ? s : null;
 }
 
+function firstTrimmed(...values) {
+  for (const value of values) {
+    const trimmed = trimOrNull(value);
+    if (trimmed) return trimmed;
+  }
+  return null;
+}
+
+function filenameFromUrl(url) {
+  try {
+    const pathname = new URL(url).pathname;
+    const name = decodeURIComponent(pathname.split("/").filter(Boolean).pop() || "");
+    return firstTrimmed(name);
+  } catch {
+    const name = String(url || "").split("?")[0].split("#")[0].split("/").filter(Boolean).pop();
+    return firstTrimmed(name);
+  }
+}
+
 function parseNullableSize(v) {
   if (v === undefined) return undefined;
   if (v === null) return null;
@@ -72,16 +91,16 @@ function pickInfoFileCreate(x, idx) {
 
   const sortOrder = Number.isInteger(x?.sortOrder) ? x.sortOrder : idx;
 
-  const filename = trimOrNull(x?.filename);
-  const originalname = trimOrNull(x?.originalname);
+  const filename = firstTrimmed(x?.filename, filenameFromUrl(url), `info-file-${Date.now()}-${idx}`);
+  const originalname = firstTrimmed(x?.originalname, x?.originalName);
   const mimetype = trimOrNull(x?.mimetype);
   const size = parseNullableSize(x?.size);
 
   return {
     url,
     sortOrder,
-    filename: filename === undefined ? null : filename,
-    originalname: originalname === undefined ? null : originalname,
+    filename,
+    originalname,
     mimetype: mimetype === undefined ? null : mimetype,
     size: size === undefined ? null : size,
   };
@@ -203,8 +222,8 @@ async function addProductInfoFile(productIdRaw, raw) {
 
   const sortOrder = Number.isInteger(raw.sortOrder) ? raw.sortOrder : 0;
 
-  const filename = trimOrNull(raw.filename);
-  const originalname = trimOrNull(raw.originalname);
+  const filename = firstTrimmed(raw.filename, filenameFromUrl(url), `info-file-${Date.now()}`);
+  const originalname = firstTrimmed(raw.originalname, raw.originalName);
   const mimetype = trimOrNull(raw.mimetype);
   const size = parseNullableSize(raw.size);
 
@@ -216,8 +235,8 @@ async function addProductInfoFile(productIdRaw, raw) {
       productId,
       url,
       sortOrder,
-      filename: filename === undefined ? null : filename,
-      originalname: originalname === undefined ? null : originalname,
+      filename,
+      originalname,
       mimetype: mimetype === undefined ? null : mimetype,
       size: size === undefined ? null : size,
     },
