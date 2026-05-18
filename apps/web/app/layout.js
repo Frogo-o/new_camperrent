@@ -1,7 +1,5 @@
 import "./globals.css";
 import Script from "next/script";
-import { Suspense } from "react";
-import AnalyticsEvents from "../components/AnalyticsEvents";
 import ToasterClient from "../components/ToasterClient";
 import LayoutShell from "../components/LayoutShell";
 import { GA_TRACKING_ID } from "../lib/gtag";
@@ -11,9 +9,6 @@ export default function RootLayout({ children }) {
     <html lang="bg">
       <body>
         <ToasterClient />
-        <Suspense fallback={null}>
-          <AnalyticsEvents />
-        </Suspense>
         <LayoutShell>{children}</LayoutShell>
 
         <Script
@@ -25,7 +20,7 @@ export default function RootLayout({ children }) {
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', '${GA_TRACKING_ID}', { send_page_view: false });
+            gtag('config', '${GA_TRACKING_ID}');
           `}
         </Script>
       </body>
