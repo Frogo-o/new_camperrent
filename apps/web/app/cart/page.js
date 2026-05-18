@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { event } from "../../lib/gtag";
 
 const STORAGE_KEY = "cart";
 
@@ -33,6 +34,22 @@ function formatEUR(cents) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     }).format(eur);
+}
+
+function trackContactFormSubmission(items, totals) {
+    event("form_submit", {
+        currency: "EUR",
+        value: Number(totals.sum || 0) / 100,
+        form_name: "cart_order_form",
+        items: items.map((item) => ({
+            item_id: item.id,
+            item_name: item.name,
+            item_brand: item.brandName,
+            item_category: item.categoryName,
+            quantity: Number(item.qty || 1),
+            price: Number(item.price || 0) / 100,
+        })),
+    });
 }
 
 export default function Page() {
@@ -142,6 +159,7 @@ export default function Page() {
                 return;
             }
 
+            trackContactFormSubmission(items, totals);
             clearCart();
             setOpenOrder(false);
             setSuccessOpen(true);

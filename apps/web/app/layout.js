@@ -1,17 +1,23 @@
 import "./globals.css";
 import Script from "next/script";
+import { Suspense } from "react";
+import AnalyticsEvents from "../components/AnalyticsEvents";
 import ToasterClient from "../components/ToasterClient";
 import LayoutShell from "../components/LayoutShell";
+import { GA_TRACKING_ID } from "../lib/gtag";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="bg">
       <body>
         <ToasterClient />
+        <Suspense fallback={null}>
+          <AnalyticsEvents />
+        </Suspense>
         <LayoutShell>{children}</LayoutShell>
 
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-PM4GG76SWF"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -19,7 +25,7 @@ export default function RootLayout({ children }) {
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-PM4GG76SWF');
+            gtag('config', '${GA_TRACKING_ID}');
           `}
         </Script>
       </body>

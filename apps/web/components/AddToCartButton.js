@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { event } from "../lib/gtag";
 
 const STORAGE_KEY = "cart";
 
@@ -22,6 +23,25 @@ function readCart() {
 function writeCart(items) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     window.dispatchEvent(new Event("cart:changed"));
+}
+
+function trackAddToCart(item) {
+    const price = Number(item.price || 0) / 100;
+
+    event("add_to_cart", {
+        currency: "EUR",
+        value: price,
+        items: [
+            {
+                item_id: item.id,
+                item_name: item.name,
+                item_brand: item.brandName,
+                item_category: item.categoryName,
+                quantity: 1,
+                price,
+            },
+        ],
+    });
 }
 
 export default function AddToCartButton({ product, label }) {
@@ -56,12 +76,14 @@ export default function AddToCartButton({ product, label }) {
             const next = cart.slice();
             next[idx] = { ...next[idx], qty: Number(next[idx].qty || 1) + 1 };
             writeCart(next);
+            trackAddToCart(item);
             setAdded(true);
             toast.success("Увеличихме количеството в количката");
             return;
         }
 
         writeCart([item, ...cart]);
+        trackAddToCart(item);
         setAdded(true);
         toast.success("Добавено в количката");
     }
