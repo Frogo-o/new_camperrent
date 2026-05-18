@@ -20,6 +20,12 @@ function slugify(v) {
     .replace(/^\-+|\-+$/g, "");
 }
 
+function apiErrorMessage(json, fallback) {
+  const details = json?.error?.details;
+  const detailText = Array.isArray(details) ? details.filter(Boolean).join(", ") : "";
+  return json?.message || json?.error?.message || detailText || fallback;
+}
+
 function ensureCamperCategoriesAtEnd(list) {
   const arr = Array.isArray(list) ? list.slice() : [];
   const bySlug = new Set(arr.map((x) => String(x?.slug || "").trim()).filter(Boolean));
@@ -159,7 +165,7 @@ export default function CreateProductClient() {
         const json = await res.json().catch(() => null);
 
         if (!res.ok) {
-          throw new Error(json?.message || "Грешка при качване на файл");
+          throw new Error(apiErrorMessage(json, "Грешка при качване на файл"));
         }
 
         const dto = json?.data || null;
@@ -264,7 +270,7 @@ export default function CreateProductClient() {
       const json = await res.json().catch(() => null);
 
       if (!res.ok) {
-        throw new Error(json?.message || "Грешка при създаване на продукт");
+        throw new Error(apiErrorMessage(json, "Грешка при създаване на продукт"));
       }
 
       toast.success("Продуктът е добавен");

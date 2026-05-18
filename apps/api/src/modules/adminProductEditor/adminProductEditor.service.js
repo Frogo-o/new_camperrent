@@ -9,7 +9,7 @@ function badRequest(details) {
 
 function trimmedOrUndefined(v) {
   const s = String(v ?? "").trim();
-  return s ? s : undefined;
+  return s ? s.slice(0, 255) : undefined;
 }
 
 function pickOriginalName(raw) {

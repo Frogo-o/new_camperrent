@@ -27,6 +27,12 @@ function slugify(v) {
     .replace(/^\-+|\-+$/g, "");
 }
 
+function apiErrorMessage(json, fallback) {
+  const details = json?.error?.details;
+  const detailText = Array.isArray(details) ? details.filter(Boolean).join(", ") : "";
+  return json?.message || json?.error?.message || detailText || fallback;
+}
+
 function ensureCamperCategoriesAtEnd(list) {
   const arr = Array.isArray(list) ? list.slice() : [];
   const bySlug = new Set(arr.map((x) => String(x?.slug || "").trim()).filter(Boolean));
@@ -461,7 +467,7 @@ export default function EditProductClient() {
         });
 
         const linkJson = await linkRes.json().catch(() => null);
-        if (!linkRes.ok) throw new Error(linkJson?.message || "Грешка при добавяне на файл към продукта");
+        if (!linkRes.ok) throw new Error(apiErrorMessage(linkJson, "Грешка при добавяне на файл към продукта"));
 
         const created = linkJson?.data;
         if (created?.id) {
@@ -503,7 +509,7 @@ export default function EditProductClient() {
       });
 
       const json = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(json?.message || "Грешка при добавяне на файл");
+      if (!res.ok) throw new Error(apiErrorMessage(json, "Грешка при добавяне на файл"));
 
       const created = json?.data;
       if (created?.id) {
@@ -545,7 +551,7 @@ export default function EditProductClient() {
       );
 
       const json = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(json?.message || "Грешка при запазване на име на файл");
+      if (!res.ok) throw new Error(apiErrorMessage(json, "Грешка при запазване на име на файл"));
 
       const updated = json?.data;
       setInfoFiles((prev) =>

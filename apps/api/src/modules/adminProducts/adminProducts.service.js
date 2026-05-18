@@ -61,7 +61,7 @@ function trimOrNull(v) {
 function firstTrimmed(...values) {
   for (const value of values) {
     const trimmed = trimOrNull(value);
-    if (trimmed) return trimmed;
+    if (trimmed) return trimmed.slice(0, 255);
   }
   return null;
 }
