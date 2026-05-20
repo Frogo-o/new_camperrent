@@ -2,9 +2,11 @@ import "./globals.css";
 import Script from "next/script";
 import ToasterClient from "../components/ToasterClient";
 import LayoutShell from "../components/LayoutShell";
-import { GA_TRACKING_ID } from "../lib/gtag";
+import { GA_TRACKING_ID, GOOGLE_ADS_ID } from "../lib/gtag";
 
 export default function RootLayout({ children }) {
+  const googleAdsConfig = GOOGLE_ADS_ID ? `gtag('config', '${GOOGLE_ADS_ID}');` : "";
+
   return (
     <html lang="bg">
       <body>
@@ -21,6 +23,7 @@ export default function RootLayout({ children }) {
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', '${GA_TRACKING_ID}');
+            ${googleAdsConfig}
           `}
         </Script>
       </body>
