@@ -67,8 +67,8 @@ function CategoryTopBar({ categories, categorySlug, setCategorySlug, setPage }) 
   return (
     <div className="mb-6 rounded-xl bg-sky-500 p-3 shadow-sm">
       <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
+        <Link
+          href="/store"
           onClick={() => {
             setPage(1);
             setCategorySlug("");
@@ -81,15 +81,15 @@ function CategoryTopBar({ categories, categorySlug, setCategorySlug, setPage }) 
           ].join(" ")}
         >
           Всички
-        </button>
+        </Link>
 
         {categories.map((c) => {
           const active = categorySlug === c.slug;
 
           return (
-            <button
+            <Link
               key={c.id}
-              type="button"
+              href={`/store/category/${encodeURIComponent(c.slug)}`}
               onClick={() => {
                 setPage(1);
                 setCategorySlug(c.slug);
@@ -102,7 +102,7 @@ function CategoryTopBar({ categories, categorySlug, setCategorySlug, setPage }) 
               ].join(" ")}
             >
               {c.name}
-            </button>
+            </Link>
           );
         })}
       </div>
@@ -110,14 +110,14 @@ function CategoryTopBar({ categories, categorySlug, setCategorySlug, setPage }) 
   );
 }
 
-export default function CatalogClient() {
+export default function CatalogClient({ initialCategorySlug = "" }) {
   const searchInputRef = useRef(null);
 
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
 
   const [q, setQ] = useState("");
-  const [categorySlug, setCategorySlug] = useState("");
+  const [categorySlug, setCategorySlug] = useState(initialCategorySlug);
   const [hasBrand, setHasBrand] = useState("");
   const [brandSlug, setBrandSlug] = useState("");
   const [sort, setSort] = useState("newest");
@@ -130,6 +130,11 @@ export default function CatalogClient() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [highlightSearch, setHighlightSearch] = useState(false);
+
+  useEffect(() => {
+    setCategorySlug(initialCategorySlug);
+    setPage(1);
+  }, [initialCategorySlug]);
 
   useEffect(() => {
     function focusSearchInput() {
