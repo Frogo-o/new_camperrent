@@ -1,4 +1,4 @@
-import { getCategories } from "../lib/api";
+import { getSeoCategories } from "../lib/seo-catalog";
 
 const SITE_URL = String(process.env.NEXT_PUBLIC_SITE_URL || "https://camper-rent.bg").replace(/\/$/, "");
 
@@ -15,7 +15,7 @@ export default async function sitemap() {
   let categories = [];
 
   try {
-    categories = await getCategories();
+    categories = await getSeoCategories();
   } catch {
     categories = [];
   }

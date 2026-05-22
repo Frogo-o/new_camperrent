@@ -1,16 +1,14 @@
-import { notFound } from "next/navigation";
-
 import CatalogPageClient from "../../../../components/CatalogPageClient";
-import { getCategories } from "../../../../lib/api";
+import { getSeoCategories } from "../../../../lib/seo-catalog";
 
 async function getCategory(slug) {
-  const categories = await getCategories();
+  const categories = await getSeoCategories();
   return categories.find((category) => category.slug === slug) || null;
 }
 
 export async function generateStaticParams() {
   try {
-    const categories = await getCategories();
+    const categories = await getSeoCategories();
     return categories.map((category) => ({ slug: category.slug }));
   } catch {
     return [];
@@ -20,18 +18,13 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const category = await getCategory(slug);
-
-  if (!category) {
-    return {
-      title: "Категорията не е намерена | Camper Rent",
-    };
-  }
+  const categoryName = category?.name || slug;
 
   return {
-    title: `${category.name} | Онлайн магазин | Camper Rent`,
-    description: `Разгледайте продукти от категория ${category.name} в онлайн магазина на Camper Rent.`,
+    title: `${categoryName} | Онлайн магазин | Camper Rent`,
+    description: `Разгледайте продукти от категория ${categoryName} в онлайн магазина на Camper Rent.`,
     alternates: {
-      canonical: `/store/category/${encodeURIComponent(category.slug)}`,
+      canonical: `/store/category/${encodeURIComponent(category?.slug || slug)}`,
     },
   };
 }
@@ -40,7 +33,5 @@ export default async function StoreCategoryPage({ params }) {
   const { slug } = await params;
   const category = await getCategory(slug);
 
-  if (!category) notFound();
-
-  return <CatalogPageClient initialCategorySlug={category.slug} />;
+  return <CatalogPageClient initialCategorySlug={category?.slug || slug} />;
 }
