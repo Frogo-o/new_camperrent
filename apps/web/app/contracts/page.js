@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { formatPriceTextFromCents } from "../../components/PriceText";
 
+export const metadata = {
+    title: "Условия и договор за наем | Camper Rent",
+    description:
+        "Прегледайте условията за наемане на кемпер от Camper Rent и изтеглете договора за резервация.",
+};
+
 function getAssetBase() {
     const raw =
         process.env.NEXT_PUBLIC_ASSET_BASE ||

@@ -1,5 +1,11 @@
 import Link from "next/link";
 
+export const metadata = {
+    title: "Караван Парк | Camper Rent",
+    description:
+        "Караван Парк в Казанлък предлага паркинг, шоурум, магазин и сервиз за кемпери, каравани и къмпинг оборудване.",
+};
+
 function getAssetBase() {
     const raw =
         process.env.NEXT_PUBLIC_ASSET_BASE ||

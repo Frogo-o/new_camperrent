@@ -1,6 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 
+export const metadata = {
+    title: "За нас | Camper Rent",
+    description:
+        "Научете повече за Camper Rent, кемперите под наем, кемпер оборудването, сервиза и Караван Парк в Казанлък.",
+};
+
 function getAssetBase() {
     const raw =
         process.env.NEXT_PUBLIC_ASSET_BASE ||

@@ -1,5 +1,11 @@
 import Link from "next/link";
 
+export const metadata = {
+    title: "Контакти | Camper Rent",
+    description:
+        "Свържете се с Camper Rent в Казанлък или София за кемпери под наем, продажба, сервиз и кемпер оборудване.",
+};
+
 export default function Page() {
     return (
         <div className="mx-auto max-w-6xl p-6">
