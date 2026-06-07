@@ -593,10 +593,10 @@ export default function OrderNowButton({ product, mode, pricing }) {
                   <button
                     type="button"
                     onClick={submit}
-                    disabled={!canSubmit || sending}
+                    disabled={sending}
                     className={cn(
                       "rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-sm transition",
-                      !canSubmit || sending
+                      sending
                         ? "bg-slate-300"
                         : isRent
                         ? "bg-emerald-600 hover:bg-emerald-700"
