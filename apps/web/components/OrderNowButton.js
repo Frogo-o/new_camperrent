@@ -115,34 +115,40 @@ export default function OrderNowButton({ product, mode, pricing }) {
     };
   }, [open]);
 
-  const canSubmit = useMemo(() => {
+  const validationIssues = useMemo(() => {
+    const issues = [];
     const customerName = safeText(form.customerName);
     const email = safeText(form.email);
     const phone = safeText(form.phone);
 
-    if (!customerName || customerName.length < 2) return false;
-    if (!email || !email.includes("@")) return false;
-    if (!phone || phone.length < 6) return false;
+    if (!customerName || customerName.length < 2) issues.push("име и фамилия");
+    if (!email || !email.includes("@")) issues.push("валиден имейл");
+    if (!phone || phone.length < 6) issues.push("телефон");
 
-    if (!isRent) return true;
+    if (!isRent) return issues;
 
-    if (!safeText(form.rentalPlace)) return false;
+    if (!safeText(form.rentalPlace)) issues.push("място на наемане");
 
     const fromIso = toIso(form.rentalFrom);
     const toIsoV = toIso(form.rentalTo);
-    if (!fromIso || !toIsoV) return false;
-    if (new Date(toIsoV).getTime() < new Date(fromIso).getTime()) return false;
+    if (!fromIso) issues.push("начална дата");
+    if (!toIsoV) issues.push("крайна дата");
+    if (fromIso && toIsoV && new Date(toIsoV).getTime() < new Date(fromIso).getTime()) {
+      issues.push("крайна дата след началната");
+    }
 
-    if (!safeText(form.country)) return false;
-    if (!safeText(form.city)) return false;
-    if (!safeText(form.postalCode)) return false;
-    if (!safeText(form.street)) return false;
+    if (!safeText(form.country)) issues.push("държава");
+    if (!safeText(form.city)) issues.push("град");
+    if (!safeText(form.postalCode)) issues.push("пощенски код");
+    if (!safeText(form.street)) issues.push("улица");
 
     const km = intOrNull(form.expectedMileageKm);
-    if (km === null || km < 0) return false;
+    if (km === null || km < 0) issues.push("предполагаем пробег");
 
-    return true;
+    return issues;
   }, [form, isRent]);
+
+  const canSubmit = validationIssues.length === 0;
 
   const accessoriesSummaryText = useMemo(() => {
     if (!isRent) return "";
@@ -182,7 +188,7 @@ export default function OrderNowButton({ product, mode, pricing }) {
   async function submit() {
     if (sending) return;
     if (!canSubmit) {
-      toast.error("Моля попълни коректно формата.");
+      toast.error(`За изпращане попълнете: ${validationIssues.join(", ")}.`);
       return;
     }
 
