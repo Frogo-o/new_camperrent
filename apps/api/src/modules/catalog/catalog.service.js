@@ -203,7 +203,11 @@ function parseProductsQueryStrict(query) {
   }
 
   if (q) {
-    where.OR = [{ name: { contains: q } }, { articleNumber: { contains: q } }];
+    where.OR = [
+      { name: { contains: q } },
+      { description: { contains: q } },
+      { articleNumber: { contains: q } },
+    ];
   }
 
   if (seats !== undefined) {

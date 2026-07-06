@@ -150,6 +150,7 @@ function parseListProductsAdminQuery(query) {
     AND.push({
       OR: [
         { name: { contains: q } },
+        { description: { contains: q } },
         { slug: { contains: q } },
         { articleNumber: { contains: q } },
       ],
