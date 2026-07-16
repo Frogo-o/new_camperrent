@@ -23,6 +23,7 @@ const navItems = [
   { href: "/store", label: "Онлайн магазин" },
   { href: "/rent", label: "Наеми кемпер" },
   { href: "/buy", label: "Купи кемпер" },
+  { href: "/box-camper", label: "Box Camper" },
   { href: "/about", label: "За нас" },
   { href: "/contacts", label: "Контакти" },
 ];

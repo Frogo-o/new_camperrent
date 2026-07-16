@@ -26,6 +26,7 @@ export default async function sitemap() {
     ...categories.map((category) => entry(`/store/category/${encodeURIComponent(category.slug)}`, 0.8)),
     entry("/rent", 0.8),
     entry("/buy", 0.8),
+    entry("/box-camper", 0.7),
     entry("/about", 0.5),
     entry("/contacts", 0.5),
   ];
