@@ -120,7 +120,6 @@ export default function BoxCamperPage() {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#00A6F4]">
               Галерия
             </p>
-            <h2 className="mt-2 text-3xl font-semibold text-[#2f658e]">Примерна визия</h2>
           </div>
         </div>
 
