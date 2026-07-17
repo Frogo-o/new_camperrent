@@ -154,6 +154,18 @@ export default function BoxCamperPage() {
           >
             Контакти
           </Link>
+          <p className="mt-4 text-sm leading-6 text-slate-600">
+            За повече информация може да ни потърсите и във{" "}
+            <a
+              href="https://www.facebook.com/p/Camper-Rent-100036783686100/"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-[#00A6F4] hover:underline"
+            >
+              Facebook
+            </a>
+            .
+          </p>
         </div>
       </section>
     </div>
