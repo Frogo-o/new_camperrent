@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata = {
   title: "Box Camper | Camper Rent",
   description:
-    "Box Camper е готова кутия за кемпер проект, която взимате като основа и довършвате сами според идеите си.",
+    "Box Camper показва възможност сами да си направите кемпер според вашите идеи и начин на пътуване.",
   alternates: {
     canonical: "/box-camper",
   },
@@ -52,29 +52,22 @@ const gallery = [
 
 const features = [
   {
-    title: "Вземате готова кутия",
-    text: "Основната форма е подготвена, за да не започвате проекта от празен лист или гола рамка.",
+    title: "Направи си сам",
+    text: "Идеята е проста: имате възможност сами да си направите кемпер според това как искате да пътувате.",
   },
   {
-    title: "Правите го по ваш вкус",
-    text: "Вътре решавате сами какво да има - легло, шкафове, място за багаж, малка кухня или съвсем семпла къмпинг база.",
+    title: "Свобода вътре",
+    text: "Може да го подредите семпло или по-пълно, с място за спане, багаж и всичко важно за вашия стил.",
   },
   {
-    title: "Довършвате поетапно",
-    text: "Може да започнете с най-важното и постепенно да добавяте детайли, когато решите, че са ви нужни.",
+    title: "Ваш проект",
+    text: "Не е нужно да следвате готов шаблон. Започвате с идея и я развивате така, както ви е удобно.",
   },
-];
-
-const steps = [
-  "Взимате готовата кемпер кутия като база.",
-  "Решавате как искате да изглежда вътре.",
-  "Довършвате интериора сами или с помощ, когато ви трябва.",
-  "Получавате кемпер, който носи вашата идея, а не готов шаблон.",
 ];
 
 export default function BoxCamperPage() {
   return (
-    <div className="space-y-12 pb-8">
+    <div className="space-y-10 pb-8">
       <section className="overflow-hidden rounded-2xl border border-[#dcecff] bg-white shadow-[0_14px_50px_rgba(41,89,129,0.08)]">
         <div className="grid gap-0 lg:grid-cols-[0.92fr_1.08fr]">
           <div className="flex flex-col justify-center p-6 sm:p-8 lg:p-10">
@@ -82,12 +75,12 @@ export default function BoxCamperPage() {
               Box Camper
             </p>
             <h1 className="mt-4 max-w-2xl text-4xl font-semibold tracking-tight text-[#2f658e] sm:text-5xl">
-              Кемпер кутия, която си правите сами
+              Опция сам да си направиш кемпер
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-              Box Camper е готова основа за хора, които искат сами да си направят кемпер.
-              Получавате кутията, а вътре решавате как да я подредите - просто, практично и
-              според вашия начин на пътуване.
+              Box Camper е за хора, които искат сами да си направят кемпер, вместо да вземат
+              готов модел. Вие решавате как да изглежда вътре, какво да има и колко семпъл или
+              завършен да бъде проектът.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -121,47 +114,13 @@ export default function BoxCamperPage() {
         ))}
       </section>
 
-      <section className="grid gap-8 rounded-2xl border border-[#dcecff] bg-white p-6 shadow-sm lg:grid-cols-[0.9fr_1.1fr] lg:p-8">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#00A6F4]">
-            Идеята
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold text-[#2f658e]">
-            Взимате основата, идеята вътре е ваша
-          </h2>
-          <p className="mt-5 leading-8 text-slate-600">
-            Box Camper не е готов кемпер с фиксирано разпределение. Идеята е да получите здрава
-            база, която после да направите сами така, както ви е удобно. Може да бъде семпъл
-            проект за уикенд пътувания или по-завършен кемпер, който постепенно надграждате.
-          </p>
-          <p className="mt-4 leading-8 text-slate-600">
-            Подходящ е за хора, които обичат сами да планират, да пробват идеи и да не плащат за
-            готови решения, които няма да използват.
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-[#e3f1ff] bg-[#f7fbff] p-5">
-          <h3 className="text-lg font-semibold text-[#2f658e]">Каква е идеята</h3>
-          <ol className="mt-5 space-y-4">
-            {steps.map((step, index) => (
-              <li key={step} className="flex gap-4">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#00A6F4] text-sm font-semibold text-white">
-                  {index + 1}
-                </span>
-                <span className="pt-1 leading-7 text-slate-700">{step}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
       <section>
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#00A6F4]">
               Галерия
             </p>
-            <h2 className="mt-2 text-3xl font-semibold text-[#2f658e]">Външен вид и вътрешна основа</h2>
+            <h2 className="mt-2 text-3xl font-semibold text-[#2f658e]">Примерна визия</h2>
           </div>
         </div>
 
@@ -185,10 +144,10 @@ export default function BoxCamperPage() {
 
       <section className="rounded-2xl border border-[#dcecff] bg-[linear-gradient(180deg,#ffffff_0%,#eef9ff_100%)] p-6 shadow-sm sm:p-8">
         <div className="max-w-3xl">
-          <h2 className="text-3xl font-semibold text-[#2f658e]">Искате да започнете собствен Box Camper?</h2>
+          <h2 className="text-3xl font-semibold text-[#2f658e]">Искате сами да си направите кемпер?</h2>
           <p className="mt-4 leading-8 text-slate-600">
-            Свържете се с нас, за да обсъдим основата и какъв тип проект искате да започнете.
-            Оттам нататък може да го развивате сами, със собствено темпо и собствена идея.
+            Свържете се с нас, за да обсъдим каква възможност търсите. Идеята е да имате
+            стартова точка за собствен кемпер проект, който да развиете по ваш начин.
           </p>
           <Link
             href="/contacts"
