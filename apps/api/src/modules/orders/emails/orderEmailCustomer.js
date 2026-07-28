@@ -33,6 +33,16 @@ function fmtDateTime(d) {
   return `${pad(dt.getDate())}.${pad(dt.getMonth() + 1)}.${dt.getFullYear()} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
 }
 
+function deliveryMethodLabel(method) {
+  if (method === "PICKUP") return "Офис на Еконт";
+  return "Личен адрес";
+}
+
+function deliveryAddressLabel(method) {
+  if (method === "PICKUP") return "Офис на Еконт";
+  return "Личен адрес";
+}
+
 function renderReservationBlock(order) {
   const hasAny =
     order.rentalPlace ||
@@ -114,6 +124,11 @@ function orderEmailCustomer(order) {
       ${introText(kind)}
       Номер на заявката/поръчката: <b>#${esc(order.id)}</b>.
     </p>
+
+    <div style="margin:12px 0; padding:12px; border:1px solid #e5e7eb; background:#fafafa">
+      <div><b>Тип доставка:</b> ${esc(deliveryMethodLabel(order.deliveryMethod))}</div>
+      <div><b>${esc(deliveryAddressLabel(order.deliveryMethod))}:</b> ${esc(order.address)}</div>
+    </div>
 
     ${renderReservationBlock(order)}
 

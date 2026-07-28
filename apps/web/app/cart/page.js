@@ -7,6 +7,25 @@ import { event } from "../../lib/gtag";
 
 const STORAGE_KEY = "cart";
 
+const DELIVERY_OPTIONS = [
+    {
+        value: "COURIER",
+        title: "Личен адрес",
+        text: "Доставка с Еконт до адрес",
+        addressLabel: "Личен адрес и град",
+        addressPlaceholder: "Напр. София, бул. Витоша 1",
+        missingAddressMessage: "Моля, въведи личен адрес за доставка",
+    },
+    {
+        value: "PICKUP",
+        title: "Офис на Еконт",
+        text: "Получаване от избран офис",
+        addressLabel: "Офис на Еконт и град",
+        addressPlaceholder: "Напр. Еконт София Център",
+        missingAddressMessage: "Моля, въведи офис на Еконт",
+    },
+];
+
 function safeParse(json) {
     try {
         const v = JSON.parse(json);
@@ -85,6 +104,8 @@ export default function Page() {
         return { qty, sum };
     }, [items]);
 
+    const selectedDelivery = DELIVERY_OPTIONS.find((option) => option.value === form.deliveryMethod) || DELIVERY_OPTIONS[0];
+
     function setQty(id, nextQty) {
         const q = Math.max(1, Number(nextQty || 1));
         const next = items.map((x) => (x.id === id ? { ...x, qty: q } : x));
@@ -126,8 +147,14 @@ export default function Page() {
             return;
         }
 
-        if (!address && deliveryMethod === "COURIER") {
-            toast.error("Моля, въведи адрес за доставка");
+        if (!email) {
+            toast.error("Моля, въведи имейл");
+            return;
+        }
+
+        if (!address) {
+            const selected = DELIVERY_OPTIONS.find((option) => option.value === deliveryMethod) || DELIVERY_OPTIONS[0];
+            toast.error(selected.missingAddressMessage);
             return;
         }
 
@@ -373,24 +400,44 @@ export default function Page() {
                             </div>
 
                             <div className="grid gap-3 sm:grid-cols-2">
-                                <div>
-                                    <label className="mb-1 block text-xs text-slate-600">Доставка</label>
-                                    <select
-                                        value={form.deliveryMethod}
-                                        onChange={(e) => setForm((f) => ({ ...f, deliveryMethod: e.target.value }))}
-                                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-slate-300 focus:ring-4 focus:ring-slate-100"
-                                    >
-                                        <option value="COURIER">Доставяне по Еконт</option>
-                                        <option value="PICKUP">Офис на Еконт</option>
-                                    </select>
+                                <div className="sm:col-span-2">
+                                    <label className="mb-1 block text-xs text-slate-600">Тип доставка</label>
+                                    <div className="grid gap-2 sm:grid-cols-2">
+                                        {DELIVERY_OPTIONS.map((option) => {
+                                            const checked = form.deliveryMethod === option.value;
+
+                                            return (
+                                                <label
+                                                    key={option.value}
+                                                    className={[
+                                                        "cursor-pointer rounded-lg border px-3 py-2 text-sm shadow-sm transition",
+                                                        checked
+                                                            ? "border-sky-500 bg-sky-50 text-sky-900"
+                                                            : "border-slate-200 bg-white text-slate-800 hover:bg-slate-50",
+                                                    ].join(" ")}
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name="deliveryMethod"
+                                                        value={option.value}
+                                                        checked={checked}
+                                                        onChange={(e) => setForm((f) => ({ ...f, deliveryMethod: e.target.value }))}
+                                                        className="sr-only"
+                                                    />
+                                                    <span className="block font-semibold">{option.title}</span>
+                                                    <span className="mt-0.5 block text-xs text-slate-600">{option.text}</span>
+                                                </label>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <label className="mb-1 block text-xs text-slate-600">Адрес и град</label>
+                                <div className="sm:col-span-2">
+                                    <label className="mb-1 block text-xs text-slate-600">{selectedDelivery.addressLabel}</label>
                                     <input
                                         value={form.address}
                                         onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
-                                        placeholder={form.deliveryMethod === "PICKUP" ? "По избор" : "Напр. Sofia, bul. Vitosha 1"}
+                                        placeholder={selectedDelivery.addressPlaceholder}
                                         className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-slate-300 focus:ring-4 focus:ring-slate-100"
                                     />
                                 </div>

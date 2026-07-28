@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import BoxCamperGallery from "./BoxCamperGallery";
 
 export const metadata = {
   title: "Box Camper | Camper Rent",
@@ -12,29 +13,29 @@ export const metadata = {
 
 const gallery = [
   {
-    src: "/box-camper/exterior-front.jpg",
-    alt: "Box Camper външен изглед отпред",
+    src: "/box-camper/box-camper-rear-angle.png",
+    alt: "Box Camper страничен изглед с прозорци",
     className: "md:col-span-2 md:row-span-2",
   },
   {
-    src: "/box-camper/interior-overcab.jpg",
-    alt: "Вътрешност на Box Camper с прозорци и надкабинна зона",
+    src: "/box-camper/box-camper-side-long.png",
+    alt: "Box Camper дълъг страничен изглед",
   },
   {
-    src: "/box-camper/roof.jpg",
-    alt: "Покрив на Box Camper с люкове",
+    src: "/box-camper/box-camper-side-clean.png",
+    alt: "Box Camper страничен изглед с три прозореца",
   },
   {
-    src: "/box-camper/exterior-long-side.jpg",
-    alt: "Страничен изглед на Box Camper",
+    src: "/box-camper/box-camper-side-framed.png",
+    alt: "Box Camper страничен изглед в рамка",
   },
   {
-    src: "/box-camper/exterior-side.jpg",
-    alt: "Box Camper страничен изглед при транспортиране",
+    src: "/box-camper/box-camper-rear-angle-wheels.png",
+    alt: "Box Camper заден ъгъл с колела за преместване",
   },
   {
-    src: "/box-camper/rear.jpg",
-    alt: "Задна част на Box Camper",
+    src: "/box-camper/exterior-front.jpg",
+    alt: "Box Camper външен изглед отпред",
   },
   {
     src: "/box-camper/exterior-rear-angle.jpg",
@@ -52,16 +53,16 @@ const gallery = [
 
 const features = [
   {
-    title: "Направи си сам",
-    text: "Идеята е проста: имате възможност сами да си направите кемпер според това как искате да пътувате.",
+    title: "Пътуване по ваш начин",
+    text: "Идеята е проста - вие избирате как искате да пътувате, а оттам започва изграждането на вашия кемпер.",
   },
   {
-    title: "Свобода вътре",
-    text: "Може да го подредите семпло или по-пълно, с място за спане, багаж и всичко важно за вашия стил.",
+    title: "Конфигурация според целта",
+    text: "Всеки box camper може да бъде конфигуриран за градско придвижване, пътувания, автономни приключения или expedition маршрути в труднодостъпни райони.",
   },
   {
-    title: "Ваш проект",
-    text: "Не е нужно да следвате готов шаблон. Започвате с идея и я развивате така, както ви е удобно.",
+    title: "Подходяща основа",
+    text: "Според товароносимостта и терена може да изберете шаси-кабина MAN, VW, Mercedes-Benz Sprinter, Iveco или Fiat, както и междуосие и тип задвижване.",
   },
 ];
 
@@ -75,12 +76,11 @@ export default function BoxCamperPage() {
               Box Camper
             </p>
             <h1 className="mt-4 max-w-2xl text-4xl font-semibold tracking-tight text-[#2f658e] sm:text-5xl">
-              Опция сам да си направиш кемпер
+              Box camper по ваша конфигурация
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-              Box Camper е за хора, които искат сами да си направят кемпер, вместо да вземат
-              готов модел. Вие решавате как да изглежда вътре, какво да има и колко семпъл или
-              завършен да бъде проектът.
+              Идеята е проста - вие избирате как искате да пътувате, а оттам започва
+              изграждането на вашия кемпер.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -94,7 +94,7 @@ export default function BoxCamperPage() {
 
           <div className="relative min-h-[320px] lg:min-h-[560px]">
             <Image
-              src="/box-camper/exterior-front-side.jpg"
+              src="/box-camper/box-camper-rear-angle.png"
               alt="Box Camper външен изглед"
               fill
               priority
@@ -123,30 +123,17 @@ export default function BoxCamperPage() {
           </div>
         </div>
 
-        <div className="grid auto-rows-[220px] gap-4 md:grid-cols-4">
-          {gallery.map((image) => (
-            <div
-              key={image.src}
-              className={`relative overflow-hidden rounded-xl border border-[#dcecff] bg-white shadow-sm ${image.className || ""}`}
-            >
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                sizes="(min-width: 768px) 25vw, 100vw"
-                className="object-cover"
-              />
-            </div>
-          ))}
-        </div>
+        <BoxCamperGallery images={gallery} />
       </section>
 
       <section className="rounded-2xl border border-[#dcecff] bg-[linear-gradient(180deg,#ffffff_0%,#eef9ff_100%)] p-6 shadow-sm sm:p-8">
         <div className="max-w-3xl">
           <h2 className="text-3xl font-semibold text-[#2f658e]">Искате сами да си направите кемпер?</h2>
           <p className="mt-4 leading-8 text-slate-600">
-            Свържете се с нас, за да обсъдим каква възможност търсите. Идеята е да имате
-            стартова точка за собствен кемпер проект, който да развиете по ваш начин.
+            Така не сте ограничени до готова фабрична конфигурация. Получавате здрава и
+            надеждна основа, върху която можете да изградите кемпер според собствените си
+            представи - с желаното вътрешно разпределение, оборудване, степен на автономност
+            и функционалност.
           </p>
           <Link
             href="/contacts"

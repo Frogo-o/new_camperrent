@@ -30,6 +30,16 @@ function fmtDateTime(d) {
   return `${pad(dt.getDate())}.${pad(dt.getMonth() + 1)}.${dt.getFullYear()} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
 }
 
+function deliveryMethodLabel(method) {
+  if (method === "PICKUP") return "Офис на Еконт";
+  return "Личен адрес";
+}
+
+function deliveryAddressLabel(method) {
+  if (method === "PICKUP") return "Офис на Еконт";
+  return "Личен адрес";
+}
+
 function renderReservationBlock(order) {
   const hasAny =
     order.rentalPlace ||
@@ -147,7 +157,10 @@ function orderEmailAdmin(order) {
       <b>Телефон:</b> ${order.phone}
     </p>
 
-    <p><b>Адрес:</b> ${order.address}</p>
+    <p>
+      <b>Тип доставка:</b> ${deliveryMethodLabel(order.deliveryMethod)}<br/>
+      <b>${deliveryAddressLabel(order.deliveryMethod)}:</b> ${order.address}
+    </p>
 
     ${renderReservationBlock(order)}
 
